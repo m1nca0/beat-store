@@ -37,8 +37,8 @@ android {
 
 dependencies {
     implementation("androidx.recyclerview:recyclerview:1.4.0")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:3.0.0")
+    implementation("com.squareup.retrofit2:converter-gson:3.0.0")
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
