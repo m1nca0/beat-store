@@ -1,12 +1,10 @@
 package com.example.beat_store.model;
 
 import java.time.LocalDate;
-import java.util.List;
-
 public class Customer extends User {
     private String artistName;
     public Customer(
-            int id,
+            Long id,
             String username,
             String email,
             String password,

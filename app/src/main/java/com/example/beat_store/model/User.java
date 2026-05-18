@@ -1,7 +1,7 @@
 package com.example.beat_store.model;
 import java.time.LocalDate;
 public abstract class User {
-    private int id;
+    private Long id;
     private String username;
     private String email;
     private String password;
@@ -9,7 +9,7 @@ public abstract class User {
     private double balance;
 
     public User(
-            int id,
+            Long id,
             String username,
             String email,
             String password,
@@ -23,7 +23,7 @@ public abstract class User {
         this.balance = balance;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -47,7 +47,7 @@ public abstract class User {
         return balance;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

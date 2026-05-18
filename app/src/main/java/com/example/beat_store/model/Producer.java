@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Producer extends User {
     public Producer(
-            int id,
+            Long id,
             String username,
             String email,
             String password,
