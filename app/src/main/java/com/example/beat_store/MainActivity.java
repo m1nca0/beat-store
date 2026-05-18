@@ -1,5 +1,6 @@
 package com.example.beat_store;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -32,14 +33,36 @@ public class MainActivity extends AppCompatActivity {
         beatList = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView2);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new BeatAdapter(beatList, new BeatAdapter.OnBuyClickListener() {
-            @Override
-            public void onBuyClick(Beat beat, int position) {
-                Toast.makeText(MainActivity.this,
-                        "Покупка: " + beat.getTitle(),
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+        adapter = new BeatAdapter(beatList,
+            new BeatAdapter.OnBuyClickListener() {
+                @Override
+                public void onBuyClick(Beat beat, int position) {
+                    Toast.makeText(MainActivity.this,
+                            "Покупка: " + beat.getTitle(),
+                            Toast.LENGTH_SHORT).show();
+                }
+            },
+            new BeatAdapter.OnBeatClickListener() {
+                @Override
+                public void onBeatClick(Beat beat, int position) {
+                    // Создаём Intent для перехода на DetailActivity
+                    Intent intent = new Intent(MainActivity.this, beat_card_activity.class);
+
+                    // Передаём данные бита через Intent
+                    intent.putExtra("beat_id", beat.getId());
+                    intent.putExtra("beat_title", beat.getTitle());
+                    intent.putExtra("beat_producer", beat.getUserNameProducer());
+                    intent.putExtra("beat_genre", beat.getGenre());
+                    intent.putExtra("beat_bpm", beat.getBpm());
+                    intent.putExtra("beat_key", beat.getKey());
+                    intent.putExtra("beat_price", beat.getPrice());
+                    intent.putExtra("beat_license", beat.getLicenseType());
+                    intent.putExtra("beat_audio", beat.getAudioFile());
+
+                    // Запускаем новую Activity
+                    startActivity(intent);
+                }
+            });
         recyclerView.setAdapter(adapter);
         loadBeats();
     }

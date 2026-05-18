@@ -2,23 +2,41 @@ package com.example.beat_store;
 
 import android.os.Bundle;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+import android.widget.TextView;
 
 public class beat_card_activity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_beat_card);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        // Получаем данные из Intent
+        String title = getIntent().getStringExtra("beat_title");
+        String producer = getIntent().getStringExtra("beat_producer");
+        String genre = getIntent().getStringExtra("beat_genre");
+        int bpm = getIntent().getIntExtra("beat_bpm", 0);
+        String key = getIntent().getStringExtra("beat_key");
+        double price = getIntent().getDoubleExtra("beat_price", 0.0);
+        String license = getIntent().getStringExtra("beat_license");
+
+        // Находим TextView по id (создадим в разметке ниже)
+        TextView tv_title = findViewById(R.id.tv_title);
+        TextView tv_prod = findViewById(R.id.tv_prod);
+        TextView tv_genre = findViewById(R.id.tv_genre);
+        TextView tv_bpm = findViewById(R.id.tv_bpm);
+        TextView tv_key = findViewById(R.id.tv_key);
+        TextView tv_license = findViewById(R.id.tv_license);
+        TextView tv_cost = findViewById(R.id.tv_cost);
+
+        // Заполняем данными
+        tv_title.setText(title);
+        tv_prod.setText(producer);
+        tv_genre.setText(genre);
+        tv_bpm.setText("" + bpm);
+        tv_key.setText(key);
+        tv_license.setText(license);
+        tv_cost.setText("" + price);
     }
 }

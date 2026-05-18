@@ -25,16 +25,22 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
     public interface OnBuyClickListener {
         void onBuyClick(Beat beat, int position);
     }
-
+    public interface OnBeatClickListener {
+        void onBeatClick(Beat beat, int position);
+    }
+    private OnBeatClickListener beatClickListener;
     public BeatAdapter(List<Beat> beatList) {
         this.beatList = beatList;
     }
-
     public BeatAdapter(List<Beat> beatList, OnBuyClickListener listener) {
         this.beatList = beatList;
         this.buyClickListener = listener;
     }
-
+    public BeatAdapter(List<Beat> beatList, OnBuyClickListener buyListener, OnBeatClickListener beatListener) {
+        this.beatList = beatList;
+        this.buyClickListener = buyListener;
+        this.beatClickListener = beatListener;
+    }
     @NonNull
     @Override
     public BeatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -58,7 +64,11 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
                 buyClickListener.onBuyClick(beat, position);
             }
         });
-
+        holder.ivCover.setOnClickListener(v -> {
+            if (beatClickListener != null) {
+                beatClickListener.onBeatClick(beat, position);
+            }
+        });
         holder.btnPlayPreview.setOnClickListener(v -> {
         });
     }
