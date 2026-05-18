@@ -1,134 +1,181 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
-    android:padding="32dp">
+    android:fillViewport="true"
+    android:background="#FAFAFA">
 
-    <!-- Заголовок -->
-    <TextView
-        android:id="@+id/tvLoginTitle"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Beat Store"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:textColor="#FF6200EE"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:layout_marginTop="80dp" />
+        android:padding="32dp">
 
-    <TextView
-        android:id="@+id/tvLoginSubtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Войдите или зарегистрируйтесь"
-        android:textSize="14sp"
-        android:textColor="#999999"
-        android:layout_marginTop="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvLoginTitle" />
-
-    <!-- Поля ввода -->
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilUsername"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:hint="Имя пользователя"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvLoginSubtitle"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etUsername"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="text"
-            android:maxLines="1" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilPassword"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Пароль"
-        app:passwordToggleEnabled="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilUsername"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:maxLines="1" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <!-- Кнопки -->
-    <Button
-        android:id="@+id/btnLogin"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:text="Вход"
-        android:textSize="16sp"
-        android:textColor="#FFFFFF"
-        android:backgroundTint="#FF6200EE"
-        android:layout_marginTop="32dp"
-        app:cornerRadius="12dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tilPassword" />
-
-    <Button
-        android:id="@+id/btnRegister"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:text="Регистрация"
-        android:textSize="16sp"
-        android:textColor="#FF6200EE"
-        android:backgroundTint="#FFFFFF"
-        app:strokeColor="#FF6200EE"
-        app:strokeWidth="2dp"
-        app:cornerRadius="12dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnLogin" />
-
-    <!-- Выбор роли -->
-    <RadioGroup
-        android:id="@+id/rgRole"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="32dp"
-        android:gravity="center"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnRegister">
-
-        <RadioButton
-            android:id="@+id/rbCustomer"
+        <!-- Заголовок -->
+        <TextView
+            android:id="@+id/tvLoginTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Покупатель"
-            android:checked="true"
-            android:layout_marginEnd="32dp" />
+            android:text="Beat Store"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:textColor="#FF6200EE"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginTop="60dp" />
 
-        <RadioButton
-            android:id="@+id/rbProducer"
+        <TextView
+            android:id="@+id/tvLoginSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Продюсер" />
-    </RadioGroup>
+            android:text="Войдите или зарегистрируйтесь"
+            android:textSize="14sp"
+            android:textColor="#999999"
+            android:layout_marginTop="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvLoginTitle" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Выбор роли -->
+        <RadioGroup
+            android:id="@+id/rgRole"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="32dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvLoginSubtitle">
+
+            <RadioButton
+                android:id="@+id/rbCustomer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Покупатель"
+                android:checked="true"
+                android:layout_marginEnd="32dp" />
+
+            <RadioButton
+                android:id="@+id/rbProducer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Продюсер" />
+        </RadioGroup>
+
+        <!-- ПОЛЯ: всегда видны -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilUsername"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:hint="Имя пользователя"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rgRole"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Email"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tilUsername"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textEmailAddress"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPassword"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Пароль"
+            app:passwordToggleEnabled="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tilEmail"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPassword"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- ПОЛЕ ТОЛЬКО ДЛЯ ПОКУПАТЕЛЯ: artist_name -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilArtistName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Имя артиста (псевдоним)"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tilPassword"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etArtistName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:maxLines="1" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Кнопки -->
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:text="Вход"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#FF6200EE"
+            android:layout_marginTop="32dp"
+            app:cornerRadius="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tilArtistName" />
+
+        <Button
+            android:id="@+id/btnRegister"
+            android:layout_width="0dp"
+            android:layout_height="56dp"
+            android:text="Регистрация"
+            android:textSize="16sp"
+            android:textColor="#FF6200EE"
+            android:backgroundTint="#FFFFFF"
+            app:strokeColor="#FF6200EE"
+            app:strokeWidth="2dp"
+            app:cornerRadius="12dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btnLogin"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
