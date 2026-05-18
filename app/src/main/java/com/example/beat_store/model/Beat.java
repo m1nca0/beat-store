@@ -4,27 +4,21 @@ public class Beat {
     private Long id;
     private String title;
 
-    // Название совпадает с ключом в JSON: "userNameProducer"
     private String userNameProducer;
 
     private String genre;
     private int bpm;
 
-    // Добавил новое поле "key" (тональность)
     private String key;
 
-    // Ссылка на аудиофайл
     private String audioFile;
 
-    // Тип лицензии
     private String licenseType;
 
     private double price;
 
-    // Пустой конструктор (обязателен для Gson)
     public Beat() {}
 
-    // Конструктор со всеми полями
     public Beat(Long id, String title, String userNameProducer, String genre,
                 int bpm, String key, String audioFile, String licenseType, double price) {
         this.id = id;
@@ -38,7 +32,6 @@ public class Beat {
         this.price = price;
     }
 
-    // Геттеры и сеттеры для всех полей
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

@@ -4,6 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.TextView;
+import android.widget.ImageButton;
 
 public class beat_card_activity extends AppCompatActivity {
 
@@ -12,7 +13,11 @@ public class beat_card_activity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beat_card);
 
-        // Получаем данные из Intent
+        ImageButton btnBack = findViewById(R.id.imageButton);
+        btnBack.setOnClickListener(v -> {
+            finish();
+        });
+
         String title = getIntent().getStringExtra("beat_title");
         String producer = getIntent().getStringExtra("beat_producer");
         String genre = getIntent().getStringExtra("beat_genre");
@@ -21,7 +26,6 @@ public class beat_card_activity extends AppCompatActivity {
         double price = getIntent().getDoubleExtra("beat_price", 0.0);
         String license = getIntent().getStringExtra("beat_license");
 
-        // Находим TextView по id (создадим в разметке ниже)
         TextView tv_title = findViewById(R.id.tv_title);
         TextView tv_prod = findViewById(R.id.tv_prod);
         TextView tv_genre = findViewById(R.id.tv_genre);
@@ -30,7 +34,6 @@ public class beat_card_activity extends AppCompatActivity {
         TextView tv_license = findViewById(R.id.tv_license);
         TextView tv_cost = findViewById(R.id.tv_cost);
 
-        // Заполняем данными
         tv_title.setText(title);
         tv_prod.setText(producer);
         tv_genre.setText(genre);
