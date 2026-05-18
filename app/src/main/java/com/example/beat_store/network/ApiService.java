@@ -9,7 +9,15 @@ import com.example.beat_store.model.AuthRequest;
 import com.example.beat_store.model.AuthResponse;
 import retrofit2.http.Body;
 import retrofit2.http.POST;
+import java.util.Map;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
+import retrofit2.http.Query;
 public interface ApiService {
+
+
+    @GET("profile/{username}")
+    Call<Map<String, Object>> getProfile(@Path("username") String username, @Query("role") String role);
     @GET("beats")
     Call<List<Beat>> getBeats();
     // Вход
