@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class UploadBeatActivity extends AppCompatActivity {
     private TextView tvSelectedFile;
     private Uri selectedAudioUri;
     private String selectedFileName;
+    private ImageButton btnBack;
 
     private final ActivityResultLauncher<String> filePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -62,6 +64,9 @@ public class UploadBeatActivity extends AppCompatActivity {
         btnSelectFile = findViewById(R.id.btnSelectFile);
         btnUpload = findViewById(R.id.btnUpload);
         tvSelectedFile = findViewById(R.id.tvSelectedFile);
+        btnBack = findViewById(R.id.btnBack);
+
+        btnBack.setOnClickListener(v -> finish());
 
         // Выбор аудиофайла
         btnSelectFile.setOnClickListener(v -> {
