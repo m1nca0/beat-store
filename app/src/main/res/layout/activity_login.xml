@@ -25,157 +25,234 @@
             app:layout_constraintTop_toTopOf="parent"
             android:layout_marginTop="60dp" />
 
-        <TextView
-            android:id="@+id/tvLoginSubtitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Войдите или зарегистрируйтесь"
-            android:textSize="14sp"
-            android:textColor="#999999"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvLoginTitle" />
-
-        <!-- Выбор роли -->
-        <RadioGroup
-            android:id="@+id/rgRole"
+        <!-- Кнопки-вкладки -->
+        <LinearLayout
+            android:id="@+id/layoutTabs"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:layout_height="48dp"
             android:layout_marginTop="32dp"
-            android:gravity="center"
+            android:background="#E8E8E8"
+            app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvLoginSubtitle">
+            app:layout_constraintTop_toBottomOf="@id/tvLoginTitle">
 
-            <RadioButton
-                android:id="@+id/rbCustomer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Покупатель"
-                android:checked="true"
-                android:layout_marginEnd="32dp" />
+            <Button
+                android:id="@+id/btnTabLogin"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Вход"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#FF6200EE"
+                app:cornerRadius="12dp" />
 
-            <RadioButton
-                android:id="@+id/rbProducer"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Продюсер" />
-        </RadioGroup>
+            <Button
+                android:id="@+id/btnTabRegister"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Регистрация"
+                android:textSize="14sp"
+                android:textColor="#999999"
+                android:backgroundTint="@android:color/transparent" />
+        </LinearLayout>
 
-        <!-- ПОЛЯ: всегда видны -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilUsername"
+        <!-- ====== ПОЛЯ ДЛЯ ВХОДА ====== -->
+        <LinearLayout
+            android:id="@+id/layoutLogin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:hint="Имя пользователя"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/rgRole"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etUsername"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="text"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilEmail"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Email"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilUsername"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEmail"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textEmailAddress"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilPassword"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Пароль"
-            app:passwordToggleEnabled="true"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilEmail"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textPassword"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <!-- ПОЛЕ ТОЛЬКО ДЛЯ ПОКУПАТЕЛЯ: artist_name -->
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilArtistName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:hint="Имя артиста (псевдоним)"
+            android:orientation="vertical"
             android:visibility="visible"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilPassword"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            app:layout_constraintTop_toBottomOf="@id/layoutTabs">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etArtistName"
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilLoginUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="24dp"
+                android:hint="Имя пользователя"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
-        <!-- Кнопки -->
-        <Button
-            android:id="@+id/btnLogin"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLoginUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilLoginPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Пароль"
+                app:passwordToggleEnabled="true"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etLoginPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Выбор роли (для входа) -->
+            <RadioGroup
+                android:id="@+id/rgRoleLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:gravity="center">
+
+                <RadioButton
+                    android:id="@+id/rbCustomerLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Покупатель"
+                    android:checked="true"
+                    android:layout_marginEnd="32dp" />
+
+                <RadioButton
+                    android:id="@+id/rbProducerLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Продюсер" />
+            </RadioGroup>
+
+            <Button
+                android:id="@+id/btnLogin"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Войти"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#FF6200EE"
+                android:layout_marginTop="24dp"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
+
+        <!-- ====== ПОЛЯ ДЛЯ РЕГИСТРАЦИИ ====== -->
+        <LinearLayout
+            android:id="@+id/layoutRegister"
             android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:text="Вход"
-            android:textSize="16sp"
-            android:textColor="#FFFFFF"
-            android:backgroundTint="#FF6200EE"
-            android:layout_marginTop="32dp"
-            app:cornerRadius="12dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tilArtistName" />
+            app:layout_constraintTop_toBottomOf="@id/layoutTabs">
 
-        <Button
-            android:id="@+id/btnRegister"
-            android:layout_width="0dp"
-            android:layout_height="56dp"
-            android:text="Регистрация"
-            android:textSize="16sp"
-            android:textColor="#FF6200EE"
-            android:backgroundTint="#FFFFFF"
-            app:strokeColor="#FF6200EE"
-            app:strokeWidth="2dp"
-            app:cornerRadius="12dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="32dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btnLogin"
-            app:layout_constraintBottom_toBottomOf="parent" />
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilRegUsername"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:hint="Имя пользователя"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etRegUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilRegEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Email"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etRegEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilRegPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Пароль"
+                app:passwordToggleEnabled="true"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etRegPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textPassword"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- Выбор роли (для регистрации) -->
+            <RadioGroup
+                android:id="@+id/rgRoleReg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="20dp"
+                android:gravity="center">
+
+                <RadioButton
+                    android:id="@+id/rbCustomerReg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Покупатель"
+                    android:checked="true"
+                    android:layout_marginEnd="32dp" />
+
+                <RadioButton
+                    android:id="@+id/rbProducerReg"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Продюсер" />
+            </RadioGroup>
+
+            <!-- Поле artist_name (только для покупателя) -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilRegArtistName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:hint="Имя артиста (псевдоним)"
+                android:visibility="visible"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/etRegArtistName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="text"
+                    android:maxLines="1" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <Button
+                android:id="@+id/btnRegister"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Зарегистрироваться"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#FF6200EE"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="32dp"
+                app:cornerRadius="12dp" />
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
