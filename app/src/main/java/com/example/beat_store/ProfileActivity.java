@@ -67,10 +67,18 @@ public class ProfileActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btnLogout);
         btnBack = findViewById(R.id.btnBack);
 
+
         // Элементы для битов продюсера
         tvMyBeatsTitle = findViewById(R.id.tvMyBeatsTitle);
         recyclerViewProducerBeats = findViewById(R.id.recyclerViewProducerBeats);
 
+        Button btnUploadBeat = findViewById(R.id.btnUploadBeat);
+
+        btnUploadBeat.setOnClickListener(v -> {
+            Intent intent = new Intent(ProfileActivity.this, UploadBeatActivity.class);
+            intent.putExtra("username", currentUsername);
+            startActivity(intent);
+        });
         // Получаем данные из Intent
         Intent intent = getIntent();
         currentUsername = intent.getStringExtra("username");
@@ -101,7 +109,9 @@ public class ProfileActivity extends AppCompatActivity {
             tvRole.setText("Продюсер");
             layoutArtistName.setVisibility(View.GONE);
             dividerArtist.setVisibility(View.GONE);
-            // Продюсер — показываем его биты
+            btnUploadBeat.setVisibility(View.VISIBLE);
+            tvMyBeatsTitle.setVisibility(View.VISIBLE);
+            recyclerViewProducerBeats.setVisibility(View.VISIBLE);
             tvMyBeatsTitle.setVisibility(View.VISIBLE);
             recyclerViewProducerBeats.setVisibility(View.VISIBLE);
             setupProducerBeats();
@@ -262,5 +272,12 @@ public class ProfileActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
             }
         });
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if ("producer".equals(currentRole) && producerBeatList != null) {
+            loadProducerBeats();
+        }
     }
 }

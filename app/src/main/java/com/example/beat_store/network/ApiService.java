@@ -13,6 +13,13 @@ import java.util.Map;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+
+import okhttp3.MultipartBody;
+import okhttp3.RequestBody;
+import retrofit2.http.Multipart;
+import retrofit2.http.POST;
+import retrofit2.http.Part;
+
 public interface ApiService {
 
 
@@ -36,4 +43,17 @@ public interface ApiService {
     // Купленные биты покупателя
     @GET("beats/my-beats/{username}")
     Call<List<Beat>> getMyBeats(@Path("username") String username);
+
+    @Multipart
+    @POST("beats/upload")
+    Call<Map<String, Object>> uploadBeat(
+            @Part MultipartBody.Part file,
+            @Part("title") RequestBody title,
+            @Part("genre") RequestBody genre,
+            @Part("bpm") RequestBody bpm,
+            @Part("key") RequestBody key,
+            @Part("licenseType") RequestBody licenseType,
+            @Part("price") RequestBody price,
+            @Part("usernameproducer") RequestBody usernameProducer
+    );
 }

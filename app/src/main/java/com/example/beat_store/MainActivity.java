@@ -1,7 +1,10 @@
 package com.example.beat_store;
 
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
     private BeatAdapter adapter;
     private List<Beat> beatList;
 
+    // ====== ДЛЯ ВОСПРОИЗВЕДЕНИЯ АУДИО ======
+    private MediaPlayer mediaPlayer;
+    // =====================================
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,16 +43,13 @@ public class MainActivity extends AppCompatActivity {
 
         // ======== НАВБАР ========
         BottomNavigationView bottomNav = findViewById(R.id.bnb);
-
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_home) {
-                // Уже на главной
                 return true;
 
             } else if (itemId == R.id.nav_profile) {
-                // Загружаем профиль с бэкенда
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl("http://10.0.2.2:8080/")
                         .addConverterFactory(GsonConverterFactory.create())
@@ -96,12 +100,13 @@ public class MainActivity extends AppCompatActivity {
         });
         // ======== КОНЕЦ НАВБАРА ========
 
-        // ======== RECYCLERVIEW ========
+        // ======== RECYCLERVIEW И АДАПТЕР ========
         beatList = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView2);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new BeatAdapter(beatList,
+                // 1. Обработчик кнопки "Купить"
                 new BeatAdapter.OnBuyClickListener() {
                     @Override
                     public void onBuyClick(Beat beat, int position) {
@@ -118,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
                             return;
                         }
 
-                        // Отправляем запрос на покупку
                         Map<String, Object> request = new HashMap<>();
                         request.put("beatId", beat.getId());
                         request.put("buyerUsername", username);
@@ -148,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 },
+                // 2. Обработчик клика по обложке (открыть карточку бита)
                 new BeatAdapter.OnBeatClickListener() {
                     @Override
                     public void onBeatClick(Beat beat, int position) {
@@ -165,12 +170,87 @@ public class MainActivity extends AppCompatActivity {
 
                         startActivity(intent);
                     }
-                });
+                },
+                // 3. ⭐ Обработчик кнопки Play (ВОСПРОИЗВЕДЕНИЕ) ⭐
+                new BeatAdapter.OnPlayClickListener() {
+                    @Override
+                    public void onPlayClick(Beat beat, int position) {
+                        // Получаем путь к аудиофайлу из объекта Beat
+                        // Например: "/beat-store-media/1234567890_beat.mp3"
+                        String audioPath = beat.getAudioFile();
+
+                        // Формируем полный URL для запроса к бэкенду
+                        String audioUrl = "http://10.0.2.2:8080" + audioPath;
+
+                        Log.d("AUDIO", "Пытаюсь воспроизвести: " + audioUrl);
+
+                        // Если уже есть активный MediaPlayer — освобождаем его
+                        if (mediaPlayer != null) {
+                            mediaPlayer.release();
+                            mediaPlayer = null;
+                        }
+
+                        // Создаём новый MediaPlayer
+                        mediaPlayer = new MediaPlayer();
+
+                        // Настройка звука: музыкальный контент
+                        mediaPlayer.setAudioAttributes(
+                                new AudioAttributes.Builder()
+                                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                                        .build()
+                        );
+
+                        try {
+                            // Указываем источник — URL нашего бэкенда
+                            mediaPlayer.setDataSource(audioUrl);
+
+                            // Готовим плеер асинхронно (не блокируя UI)
+                            mediaPlayer.prepareAsync();
+
+                            // Когда плеер готов — начинаем воспроизведение
+                            mediaPlayer.setOnPreparedListener(mp -> {
+                                mp.start();
+                                Toast.makeText(MainActivity.this,
+                                        "▶ " + beat.getTitle(),
+                                        Toast.LENGTH_SHORT).show();
+                            });
+
+                            // Когда трек закончился — освобождаем ресурсы
+                            mediaPlayer.setOnCompletionListener(mp -> {
+                                Toast.makeText(MainActivity.this,
+                                        "⏹ Трек завершён",
+                                        Toast.LENGTH_SHORT).show();
+                                mp.release();
+                                mediaPlayer = null;
+                            });
+
+                            // Обработка ошибок воспроизведения
+                            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
+                                Log.e("AUDIO", "Ошибка MediaPlayer: what=" + what + " extra=" + extra);
+                                Toast.makeText(MainActivity.this,
+                                        "Ошибка воспроизведения",
+                                        Toast.LENGTH_SHORT).show();
+                                mp.release();
+                                mediaPlayer = null;
+                                return true; // true = ошибка обработана
+                            });
+
+                        } catch (Exception e) {
+                            Log.e("AUDIO", "Ошибка: " + e.getMessage(), e);
+                            Toast.makeText(MainActivity.this,
+                                    "Ошибка: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+        );
 
         recyclerView.setAdapter(adapter);
         loadBeats();
     }
 
+    // ====== ЗАГРУЗКА БИТОВ ======
     private void loadBeats() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
@@ -201,5 +281,15 @@ public class MainActivity extends AppCompatActivity {
                         Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    // ====== ОСВОБОЖДЕНИЕ MEDIAPLAYER ПРИ ЗАКРЫТИИ ======
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
     }
 }

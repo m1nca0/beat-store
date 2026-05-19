@@ -251,8 +251,24 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnUploadBeat" />
+    <!-- Кнопка "Загрузить бит" (видна только продюсеру) -->
+    <Button
+        android:id="@+id/btnUploadBeat"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="+ Загрузить бит"
+        android:textSize="14sp"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#FF6200EE"
+        app:cornerRadius="12dp"
+        android:visibility="gone"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnLogout" />
-
     <!-- Список битов продюсера -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewProducerBeats"
