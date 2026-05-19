@@ -10,8 +10,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.beat_store.adapter.BeatAdapter;
+import com.example.beat_store.model.Beat;
+import com.example.beat_store.network.ApiService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -26,12 +41,21 @@ public class ProfileActivity extends AppCompatActivity {
     private Button btnLogout;
     private ImageButton btnBack;
 
+    // Для битов продюсера
+    private TextView tvMyBeatsTitle;
+    private RecyclerView recyclerViewProducerBeats;
+    private BeatAdapter producerBeatsAdapter;
+    private List<Beat> producerBeatList;
+
+    private String currentUsername;
+    private String currentRole;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-        // Находим элементы
+        // Находим элементы профиля
         tvUsername = findViewById(R.id.tvUsername);
         tvRole = findViewById(R.id.tvRole);
         tvEmail = findViewById(R.id.tvEmail);
@@ -43,44 +67,55 @@ public class ProfileActivity extends AppCompatActivity {
         btnLogout = findViewById(R.id.btnLogout);
         btnBack = findViewById(R.id.btnBack);
 
-        // Получаем данные из Intent (передаются из MainActivity или LoginActivity)
+        // Элементы для битов продюсера
+        tvMyBeatsTitle = findViewById(R.id.tvMyBeatsTitle);
+        recyclerViewProducerBeats = findViewById(R.id.recyclerViewProducerBeats);
+
+        // Получаем данные из Intent
         Intent intent = getIntent();
-        String username = intent.getStringExtra("username");
-        String role = intent.getStringExtra("role");
+        currentUsername = intent.getStringExtra("username");
+        currentRole = intent.getStringExtra("role");
         String email = intent.getStringExtra("email");
         String artistName = intent.getStringExtra("artist_name");
         double balance = intent.getDoubleExtra("balance", 0.0);
         String regDate = intent.getStringExtra("reg_date");
 
-        // Заполняем поля
-        tvUsername.setText(username != null ? username : "Гость");
+        // Заполняем профиль
+        tvUsername.setText(currentUsername != null ? currentUsername : "Гость");
         tvEmail.setText(email != null ? email : "—");
 
-        if ("customer".equals(role)) {
+        if ("customer".equals(currentRole)) {
             tvRole.setText("Покупатель");
-            // Показываем поле с именем артиста
             if (artistName != null && !artistName.isEmpty()) {
                 tvArtistName.setText(artistName);
                 layoutArtistName.setVisibility(View.VISIBLE);
                 dividerArtist.setVisibility(View.VISIBLE);
             }
-        } else if ("producer".equals(role)) {
+            // Покупатель — показываем КУПЛЕННЫЕ биты
+            tvMyBeatsTitle.setText("Мои покупки");
+            tvMyBeatsTitle.setVisibility(View.VISIBLE);
+            recyclerViewProducerBeats.setVisibility(View.VISIBLE);
+            setupProducerBeats();  // используем тот же метод
+            loadCustomerBeats();
+        } else if ("producer".equals(currentRole)) {
             tvRole.setText("Продюсер");
             layoutArtistName.setVisibility(View.GONE);
             dividerArtist.setVisibility(View.GONE);
-        } else {
-            tvRole.setText("—");
+            // Продюсер — показываем его биты
+            tvMyBeatsTitle.setVisibility(View.VISIBLE);
+            recyclerViewProducerBeats.setVisibility(View.VISIBLE);
+            setupProducerBeats();
+            loadProducerBeats();
         }
 
         tvBalance.setText(String.format("$%.2f", balance));
         tvRegDate.setText(regDate != null ? regDate : "—");
 
-        // Кнопка "Назад" (стрелка)
+        // Кнопка "Назад"
         btnBack.setOnClickListener(v -> finish());
 
         // Кнопка "Выйти"
         btnLogout.setOnClickListener(v -> {
-            // Возвращаемся на экран входа
             Intent loginIntent = new Intent(ProfileActivity.this, LoginActivity.class);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(loginIntent);
@@ -93,10 +128,9 @@ public class ProfileActivity extends AppCompatActivity {
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_home) {
-                // Переход на главную
                 Intent mainIntent = new Intent(ProfileActivity.this, MainActivity.class);
-                mainIntent.putExtra("username", username);
-                mainIntent.putExtra("role", role);
+                mainIntent.putExtra("username", currentUsername);
+                mainIntent.putExtra("role", currentRole);
                 mainIntent.putExtra("email", email);
                 mainIntent.putExtra("balance", balance);
                 mainIntent.putExtra("reg_date", regDate);
@@ -106,12 +140,127 @@ public class ProfileActivity extends AppCompatActivity {
                 startActivity(mainIntent);
                 finish();
                 return true;
-
             } else if (itemId == R.id.nav_profile) {
-                // Уже на профиле — ничего не делаем
-                return true;
+                return true; // уже здесь
             }
             return false;
+        });
+    }
+
+    /**
+     * Настройка RecyclerView для битов продюсера
+     */
+    private void setupProducerBeats() {
+        producerBeatList = new ArrayList<>();
+        recyclerViewProducerBeats.setLayoutManager(new LinearLayoutManager(this));
+
+        // Используем тот же адаптер BeatAdapter
+        producerBeatsAdapter = new BeatAdapter(producerBeatList,
+                new BeatAdapter.OnBuyClickListener() {
+                    @Override
+                    public void onBuyClick(Beat beat, int position) {
+                        Toast.makeText(ProfileActivity.this,
+                                "Это ваш бит: " + beat.getTitle(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                },
+                new BeatAdapter.OnBeatClickListener() {
+                    @Override
+                    public void onBeatClick(Beat beat, int position) {
+                        // Открываем карточку бита
+                        Intent intent = new Intent(ProfileActivity.this, beat_card_activity.class);
+                        intent.putExtra("beat_id", beat.getId());
+                        intent.putExtra("beat_title", beat.getTitle());
+                        intent.putExtra("beat_producer", beat.getUserNameProducer());
+                        intent.putExtra("beat_genre", beat.getGenre());
+                        intent.putExtra("beat_bpm", beat.getBpm());
+                        intent.putExtra("beat_key", beat.getKey());
+                        intent.putExtra("beat_price", beat.getPrice());
+                        intent.putExtra("beat_license", beat.getLicenseType());
+                        intent.putExtra("beat_audio", beat.getAudioFile());
+                        startActivity(intent);
+                    }
+                });
+
+        recyclerViewProducerBeats.setAdapter(producerBeatsAdapter);
+    }
+
+    /**
+     * Загрузка битов продюсера с бэкенда
+     */
+    private void loadProducerBeats() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        apiService.getBeatsByProducer(currentUsername).enqueue(new Callback<List<Beat>>() {
+            @Override
+            public void onResponse(Call<List<Beat>> call, Response<List<Beat>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Beat> beats = response.body();
+                    producerBeatList.clear();
+                    producerBeatList.addAll(beats);
+                    producerBeatsAdapter.notifyDataSetChanged();
+
+                    if (beats.isEmpty()) {
+                        Toast.makeText(ProfileActivity.this,
+                                "У вас пока нет битов", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(ProfileActivity.this,
+                            "Ошибка загрузки битов: " + response.code(),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Beat>> call, Throwable t) {
+                Toast.makeText(ProfileActivity.this,
+                        "Ошибка: " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+    /**
+     * Загрузка купленных битов покупателя
+     */
+    private void loadCustomerBeats() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        apiService.getMyBeats(currentUsername).enqueue(new Callback<List<Beat>>() {
+            @Override
+            public void onResponse(Call<List<Beat>> call, Response<List<Beat>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    List<Beat> beats = response.body();
+                    producerBeatList.clear();
+                    producerBeatList.addAll(beats);
+                    producerBeatsAdapter.notifyDataSetChanged();
+
+                    if (beats.isEmpty()) {
+                        Toast.makeText(ProfileActivity.this,
+                                "У вас пока нет купленных битов", Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(ProfileActivity.this,
+                            "Ошибка загрузки битов: " + response.code(),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Beat>> call, Throwable t) {
+                Toast.makeText(ProfileActivity.this,
+                        "Ошибка: " + t.getMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
         });
     }
 }

@@ -219,23 +219,53 @@
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Кнопка выхода -->
+    <!-- Заголовок "Мои биты" (виден только для продюсера) -->
     <Button
         android:id="@+id/btnLogout"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:text="Выйти"
-        android:textSize="16sp"
-        android:textColor="#FF6200EE"
-        android:backgroundTint="#FFFFFF"
-        app:strokeColor="#FF6200EE"
-        app:strokeWidth="2dp"
-        app:cornerRadius="12dp"
         android:layout_marginStart="24dp"
+        android:layout_marginTop="20dp"
         android:layout_marginEnd="24dp"
+        android:backgroundTint="#FFFFFF"
+        android:text="Выйти"
+        android:textColor="#FF6200EE"
+        android:textSize="16sp"
+        app:cornerRadius="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardInfo"
+        app:strokeColor="#FF6200EE"
+        app:strokeWidth="2dp" />
+
+    <TextView
+        android:id="@+id/tvMyBeatsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Мои биты"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#000000"
+        android:visibility="gone"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLogout" />
+
+    <!-- Список битов продюсера -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewProducerBeats"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@id/bnb"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardInfo" />
-
+        app:layout_constraintTop_toBottomOf="@id/tvMyBeatsTitle" />
     <!-- Нижний навбар -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bnb"

@@ -27,4 +27,13 @@ public interface ApiService {
     // Регистрация
     @POST("register")
     Call<AuthResponse> register(@Body AuthRequest request);
+    @GET("beats/by-producer/{producerUsername}")
+    Call<List<Beat>> getBeatsByProducer(@Path("producerUsername") String producerUsername);
+    // Покупка бита
+    @POST("beats/buy")
+    Call<Map<String, Object>> buyBeat(@Body Map<String, Object> request);
+
+    // Купленные биты покупателя
+    @GET("beats/my-beats/{username}")
+    Call<List<Beat>> getMyBeats(@Path("username") String username);
 }

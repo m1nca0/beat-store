@@ -189,41 +189,23 @@
     <View
         android:id="@+id/action_panel"
         android:layout_width="413dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="-32dp"
+        android:layout_height="150dp"
+        android:layout_marginBottom="-40dp"
         android:background="@drawable/rounded_background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/btn_buy"
-        android:layout_width="180dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginEnd="15dp"
-        android:text="Купить"
-        app:layout_constraintEnd_toEndOf="@+id/action_panel"
-        app:layout_constraintTop_toTopOf="@+id/action_panel" />
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="180dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="15dp"
-        android:text="В ''Избранное''"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/action_panel" />
-
     <ImageButton
         android:id="@+id/imageButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="@+id/view"
-        app:layout_constraintEnd_toStartOf="@+id/tv_title"
-        app:layout_constraintHorizontal_bias="0.263"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@null"
+        android:src="@android:drawable/ic_menu_revert"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:srcCompat="?attr/actionModeCloseDrawable" />
+        app:layout_constraintTop_toTopOf="@id/view"
+        app:layout_constraintBottom_toBottomOf="@id/view"
+        app:layout_constraintVertical_bias="0.6" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

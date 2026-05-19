@@ -14,6 +14,7 @@ import com.example.beat_store.network.ApiService;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -104,9 +105,47 @@ public class MainActivity extends AppCompatActivity {
                 new BeatAdapter.OnBuyClickListener() {
                     @Override
                     public void onBuyClick(Beat beat, int position) {
-                        Toast.makeText(MainActivity.this,
-                                "Покупка: " + beat.getTitle(),
-                                Toast.LENGTH_SHORT).show();
+                        String username = getIntent().getStringExtra("username");
+                        String role = getIntent().getStringExtra("role");
+
+                        if (username == null) {
+                            Toast.makeText(MainActivity.this, "Сначала войдите", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (!"customer".equals(role)) {
+                            Toast.makeText(MainActivity.this, "Только покупатели могут покупать биты", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // Отправляем запрос на покупку
+                        Map<String, Object> request = new HashMap<>();
+                        request.put("beatId", beat.getId());
+                        request.put("buyerUsername", username);
+
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl("http://10.0.2.2:8080/")
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+
+                        ApiService apiService = retrofit.create(ApiService.class);
+
+                        apiService.buyBeat(request).enqueue(new Callback<Map<String, Object>>() {
+                            @Override
+                            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                                if (response.isSuccessful() && response.body() != null) {
+                                    String message = String.valueOf(response.body().get("message"));
+                                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Ошибка: " + response.code(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                                Toast.makeText(MainActivity.this, "Ошибка: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        });
                     }
                 },
                 new BeatAdapter.OnBeatClickListener() {

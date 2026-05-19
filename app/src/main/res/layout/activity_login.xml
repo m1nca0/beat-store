@@ -31,7 +31,6 @@
             android:layout_width="0dp"
             android:layout_height="48dp"
             android:layout_marginTop="32dp"
-            android:background="#E8E8E8"
             app:cornerRadius="12dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +44,6 @@
                 android:text="Вход"
                 android:textSize="14sp"
                 android:textColor="#FFFFFF"
-                android:backgroundTint="#FF6200EE"
                 app:cornerRadius="12dp" />
 
             <Button
@@ -56,6 +54,7 @@
                 android:text="Регистрация"
                 android:textSize="14sp"
                 android:textColor="#999999"
+                app:cornerRadius="12dp"
                 android:backgroundTint="@android:color/transparent" />
         </LinearLayout>
 
