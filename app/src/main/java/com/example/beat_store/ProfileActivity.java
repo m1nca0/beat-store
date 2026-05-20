@@ -28,7 +28,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class ProfileActivity extends AppCompatActivity {
+public class ProfileActivity extends AppCompatActivity implements AudioPlayer.PlayerCallback{
 
     private TextView tvUsername;
     private TextView tvRole;
@@ -54,7 +54,7 @@ public class ProfileActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
+        AudioPlayer.getInstance().setCallback(this);
         // Находим элементы профиля
         tvUsername = findViewById(R.id.tvUsername);
         tvRole = findViewById(R.id.tvRole);
@@ -163,7 +163,6 @@ public class ProfileActivity extends AppCompatActivity {
     private void setupProducerBeats() {
         producerBeatList = new ArrayList<>();
         recyclerViewProducerBeats.setLayoutManager(new LinearLayoutManager(this));
-
         // Используем тот же адаптер BeatAdapter
         producerBeatsAdapter = new BeatAdapter(producerBeatList,
                 new BeatAdapter.OnBuyClickListener() {
@@ -189,6 +188,13 @@ public class ProfileActivity extends AppCompatActivity {
                         intent.putExtra("beat_license", beat.getLicenseType());
                         intent.putExtra("beat_audio", beat.getAudioFile());
                         startActivity(intent);
+                    }
+                },
+                new BeatAdapter.OnPlayClickListener() {
+                    @Override
+                    public void onPlayClick(Beat beat, int position) {
+                        String audioUrl = "http://10.0.2.2:8080" + beat.getAudioFile();
+                        AudioPlayer.getInstance().togglePlay(audioUrl, beat.getTitle(), position);
                     }
                 });
 
@@ -279,5 +285,36 @@ public class ProfileActivity extends AppCompatActivity {
         if ("producer".equals(currentRole) && producerBeatList != null) {
             loadProducerBeats();
         }
+    }
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AudioPlayer.getInstance().setCallback(null);
+    }
+    // ====== Реализация PlayerCallback ======
+
+    @Override
+    public void onPlayStarted(String trackName) {
+        Toast.makeText(this, "▶ " + trackName, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPlayPaused() {
+        Toast.makeText(this, "⏸ Пауза", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPlayResumed() {
+        Toast.makeText(this, "▶ Продолжаем", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPlayCompleted() {
+        Toast.makeText(this, "⏹ Трек завершён", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPlayError(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 }

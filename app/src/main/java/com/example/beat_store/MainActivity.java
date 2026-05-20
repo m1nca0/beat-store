@@ -27,19 +27,16 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements AudioPlayer.PlayerCallback{
     private RecyclerView recyclerView;
     private BeatAdapter adapter;
     private List<Beat> beatList;
-
-    private MediaPlayer mediaPlayer;
-    private int currentPlayingPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        AudioPlayer.getInstance().setCallback(this);
         BottomNavigationView bottomNav = findViewById(R.id.bnb);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -172,77 +169,8 @@ public class MainActivity extends AppCompatActivity {
                 new BeatAdapter.OnPlayClickListener() {
                     @Override
                     public void onPlayClick(Beat beat, int position) {
-                        String audioPath = beat.getAudioFile();
-                        String audioUrl = "http://10.0.2.2:8080" + audioPath;
-
-                        Log.d("AUDIO", "Нажата кнопка. URL: " + audioUrl);
-
-                        if (currentPlayingPosition == position && mediaPlayer != null) {
-                            if (mediaPlayer.isPlaying()) {
-                                // Играет → ставим на паузу
-                                mediaPlayer.pause();
-                                Toast.makeText(MainActivity.this, "⏸ Пауза", Toast.LENGTH_SHORT).show();
-                            } else {
-                                // На паузе → продолжаем
-                                mediaPlayer.start();
-                                Toast.makeText(MainActivity.this, "▶ " + beat.getTitle(), Toast.LENGTH_SHORT).show();
-                            }
-                            return;
-                        }
-
-                        if (mediaPlayer != null) {
-                            mediaPlayer.release();
-                            mediaPlayer = null;
-                        }
-
-                        // Создаём новый плеер
-                        mediaPlayer = new MediaPlayer();
-                        mediaPlayer.setAudioAttributes(
-                                new AudioAttributes.Builder()
-                                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                                        .build()
-                        );
-
-                        try {
-                            mediaPlayer.setDataSource(audioUrl);
-                            mediaPlayer.prepareAsync();
-
-                            mediaPlayer.setOnPreparedListener(mp -> {
-                                mp.start();
-                                currentPlayingPosition = position;  // Запоминаем, какой трек играет
-                                Toast.makeText(MainActivity.this,
-                                        "▶ " + beat.getTitle(),
-                                        Toast.LENGTH_SHORT).show();
-                            });
-
-                            mediaPlayer.setOnCompletionListener(mp -> {
-                                Toast.makeText(MainActivity.this,
-                                        "⏹ Трек завершён",
-                                        Toast.LENGTH_SHORT).show();
-                                mp.release();
-                                mediaPlayer = null;
-                                currentPlayingPosition = -1;  // Ничего не играет
-                            });
-
-                            mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                                Log.e("AUDIO", "Ошибка: what=" + what + " extra=" + extra);
-                                Toast.makeText(MainActivity.this,
-                                        "Ошибка воспроизведения",
-                                        Toast.LENGTH_SHORT).show();
-                                mp.release();
-                                mediaPlayer = null;
-                                currentPlayingPosition = -1;
-                                return true;
-                            });
-
-                        } catch (Exception e) {
-                            Log.e("AUDIO", "Ошибка: " + e.getMessage(), e);
-                            Toast.makeText(MainActivity.this,
-                                    "Ошибка: " + e.getMessage(),
-                                    Toast.LENGTH_LONG).show();
-                            currentPlayingPosition = -1;
-                        }
+                        String audioUrl = "http://10.0.2.2:8080" + beat.getAudioFile();
+                        AudioPlayer.getInstance().togglePlay(audioUrl, beat.getTitle(), position);
                     }
                 }
         );
@@ -284,12 +212,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mediaPlayer != null) {
-            mediaPlayer.release();
-            mediaPlayer = null;
-        }
-        currentPlayingPosition = -1;
+    public void onPlayStarted(String trackName) {
+        Toast.makeText(this, "▶ " + trackName, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPlayPaused() {
+        Toast.makeText(this, "⏸ Пауза", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPlayResumed() {
+        Toast.makeText(this, "▶ Продолжаем", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPlayCompleted() {
+        Toast.makeText(this, "⏹ Трек завершён", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onPlayError(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 }
