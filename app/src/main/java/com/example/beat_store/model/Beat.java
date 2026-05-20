@@ -11,7 +11,7 @@ public class Beat {
 
     private String key;
 
-    private String audioFile;
+    private String audiofile;
 
     private String licenseType;
 
@@ -20,14 +20,14 @@ public class Beat {
     public Beat() {}
 
     public Beat(Long id, String title, String userNameProducer, String genre,
-                int bpm, String key, String audioFile, String licenseType, double price) {
+                int bpm, String key, String audiofile, String licenseType, double price) {
         this.id = id;
         this.title = title;
         this.userNameProducer = userNameProducer;
         this.genre = genre;
         this.bpm = bpm;
         this.key = key;
-        this.audioFile = audioFile;
+        this.audiofile = audiofile;
         this.licenseType = licenseType;
         this.price = price;
     }
@@ -52,8 +52,8 @@ public class Beat {
     public String getKey() { return key; }
     public void setKey(String key) { this.key = key; }
 
-    public String getAudioFile() { return audioFile; }
-    public void setAudioFile(String audioFile) { this.audioFile = audioFile; }
+    public String getAudioFile() { return audiofile; }
+    public void setAudioFile(String audiofile) { this.audiofile = audiofile; }
 
     public String getLicenseType() { return licenseType; }
     public void setLicenseType(String licenseType) { this.licenseType = licenseType; }

@@ -32,16 +32,14 @@ public class MainActivity extends AppCompatActivity {
     private BeatAdapter adapter;
     private List<Beat> beatList;
 
-    // ====== ДЛЯ ВОСПРОИЗВЕДЕНИЯ АУДИО ======
     private MediaPlayer mediaPlayer;
-    // =====================================
+    private int currentPlayingPosition = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // ======== НАВБАР ========
         BottomNavigationView bottomNav = findViewById(R.id.bnb);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -98,9 +96,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return false;
         });
-        // ======== КОНЕЦ НАВБАРА ========
 
-        // ======== RECYCLERVIEW И АДАПТЕР ========
         beatList = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView2);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -172,28 +168,35 @@ public class MainActivity extends AppCompatActivity {
                     }
                 },
                 // 3. ⭐ Обработчик кнопки Play (ВОСПРОИЗВЕДЕНИЕ) ⭐
+                // 3. Обработчик кнопки Play (ВОСПРОИЗВЕДЕНИЕ / ПАУЗА)
                 new BeatAdapter.OnPlayClickListener() {
                     @Override
                     public void onPlayClick(Beat beat, int position) {
-                        // Получаем путь к аудиофайлу из объекта Beat
-                        // Например: "/beat-store-media/1234567890_beat.mp3"
                         String audioPath = beat.getAudioFile();
-
-                        // Формируем полный URL для запроса к бэкенду
                         String audioUrl = "http://10.0.2.2:8080" + audioPath;
 
-                        Log.d("AUDIO", "Пытаюсь воспроизвести: " + audioUrl);
+                        Log.d("AUDIO", "Нажата кнопка. URL: " + audioUrl);
 
-                        // Если уже есть активный MediaPlayer — освобождаем его
+                        if (currentPlayingPosition == position && mediaPlayer != null) {
+                            if (mediaPlayer.isPlaying()) {
+                                // Играет → ставим на паузу
+                                mediaPlayer.pause();
+                                Toast.makeText(MainActivity.this, "⏸ Пауза", Toast.LENGTH_SHORT).show();
+                            } else {
+                                // На паузе → продолжаем
+                                mediaPlayer.start();
+                                Toast.makeText(MainActivity.this, "▶ " + beat.getTitle(), Toast.LENGTH_SHORT).show();
+                            }
+                            return;
+                        }
+
                         if (mediaPlayer != null) {
                             mediaPlayer.release();
                             mediaPlayer = null;
                         }
 
-                        // Создаём новый MediaPlayer
+                        // Создаём новый плеер
                         mediaPlayer = new MediaPlayer();
-
-                        // Настройка звука: музыкальный контент
                         mediaPlayer.setAudioAttributes(
                                 new AudioAttributes.Builder()
                                         .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -202,38 +205,35 @@ public class MainActivity extends AppCompatActivity {
                         );
 
                         try {
-                            // Указываем источник — URL нашего бэкенда
                             mediaPlayer.setDataSource(audioUrl);
-
-                            // Готовим плеер асинхронно (не блокируя UI)
                             mediaPlayer.prepareAsync();
 
-                            // Когда плеер готов — начинаем воспроизведение
                             mediaPlayer.setOnPreparedListener(mp -> {
                                 mp.start();
+                                currentPlayingPosition = position;  // Запоминаем, какой трек играет
                                 Toast.makeText(MainActivity.this,
                                         "▶ " + beat.getTitle(),
                                         Toast.LENGTH_SHORT).show();
                             });
 
-                            // Когда трек закончился — освобождаем ресурсы
                             mediaPlayer.setOnCompletionListener(mp -> {
                                 Toast.makeText(MainActivity.this,
                                         "⏹ Трек завершён",
                                         Toast.LENGTH_SHORT).show();
                                 mp.release();
                                 mediaPlayer = null;
+                                currentPlayingPosition = -1;  // Ничего не играет
                             });
 
-                            // Обработка ошибок воспроизведения
                             mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                                Log.e("AUDIO", "Ошибка MediaPlayer: what=" + what + " extra=" + extra);
+                                Log.e("AUDIO", "Ошибка: what=" + what + " extra=" + extra);
                                 Toast.makeText(MainActivity.this,
                                         "Ошибка воспроизведения",
                                         Toast.LENGTH_SHORT).show();
                                 mp.release();
                                 mediaPlayer = null;
-                                return true; // true = ошибка обработана
+                                currentPlayingPosition = -1;
+                                return true;
                             });
 
                         } catch (Exception e) {
@@ -241,6 +241,7 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(MainActivity.this,
                                     "Ошибка: " + e.getMessage(),
                                     Toast.LENGTH_LONG).show();
+                            currentPlayingPosition = -1;
                         }
                     }
                 }
@@ -250,7 +251,6 @@ public class MainActivity extends AppCompatActivity {
         loadBeats();
     }
 
-    // ====== ЗАГРУЗКА БИТОВ ======
     private void loadBeats() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
@@ -283,7 +283,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // ====== ОСВОБОЖДЕНИЕ MEDIAPLAYER ПРИ ЗАКРЫТИИ ======
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -291,5 +290,6 @@ public class MainActivity extends AppCompatActivity {
             mediaPlayer.release();
             mediaPlayer = null;
         }
+        currentPlayingPosition = -1;
     }
 }
