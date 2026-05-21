@@ -15,6 +15,9 @@
         android:theme="@style/Theme.Beatstore"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".DialogFilterActivity"
+            android:exported="false" />
+        <activity
             android:name=".UploadBeatActivity"
             android:exported="false" />
         <activity

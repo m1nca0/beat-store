@@ -5,6 +5,11 @@ import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.SearchView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,23 +32,29 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements AudioPlayer.PlayerCallback{
+public class MainActivity extends AppCompatActivity implements AudioPlayer.PlayerCallback {
+
     private RecyclerView recyclerView;
     private BeatAdapter adapter;
     private List<Beat> beatList;
+    private SearchView searchView;
+    private Spinner spinnerFilter;
+
+    private String currentSearchField = "title";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         AudioPlayer.getInstance().setCallback(this);
+
         BottomNavigationView bottomNav = findViewById(R.id.bnb);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_home) {
                 return true;
-
             } else if (itemId == R.id.nav_profile) {
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl("http://10.0.2.2:8080/")
@@ -94,12 +105,55 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
             return false;
         });
 
+        searchView = findViewById(R.id.searchView);
+        spinnerFilter = findViewById(R.id.spinnerFilter);
+
+        String[] filterOptionsWithIcons = {"🔤 Название", "👤 Продюсер", "🎵 Жанр", "⏱ BPM", "🎹 Тональность", "📄 Лицензия"};
+        String[] filterFields = {"title", "usernameproducer", "genre", "bpm", "key", "licensetype"};
+
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(
+                this,
+                android.R.layout.simple_spinner_item,
+                filterOptionsWithIcons
+        );
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFilter.setAdapter(spinnerAdapter);
+
+        spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                currentSearchField = filterFields[position];
+                String query = searchView.getQuery().toString();
+                if (!query.isEmpty()) {
+                    performSearch(query);
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                currentSearchField = "title";
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                performSearch(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                performSearch(newText);
+                return true;
+            }
+        });
+
         beatList = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerView2);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         adapter = new BeatAdapter(beatList,
-                // 1. Обработчик кнопки "Купить"
                 new BeatAdapter.OnBuyClickListener() {
                     @Override
                     public void onBuyClick(Beat beat, int position) {
@@ -145,7 +199,6 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
                         });
                     }
                 },
-                // 2. Обработчик клика по обложке (открыть карточку бита)
                 new BeatAdapter.OnBeatClickListener() {
                     @Override
                     public void onBeatClick(Beat beat, int position) {
@@ -164,8 +217,6 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
                         startActivity(intent);
                     }
                 },
-                // 3. ⭐ Обработчик кнопки Play (ВОСПРОИЗВЕДЕНИЕ) ⭐
-                // 3. Обработчик кнопки Play (ВОСПРОИЗВЕДЕНИЕ / ПАУЗА)
                 new BeatAdapter.OnPlayClickListener() {
                     @Override
                     public void onPlayClick(Beat beat, int position) {
@@ -176,10 +227,17 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
         );
 
         recyclerView.setAdapter(adapter);
-        loadBeats();
+
+        performSearch("");
     }
 
-    private void loadBeats() {
+
+    /**
+     * Выполняет поиск битов.
+     * Если query пустой — загружает все биты.
+     * Иначе — ищет по выбранному в Spinner полю.
+     */
+    private void performSearch(String query) {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -187,14 +245,24 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
 
         ApiService apiService = retrofit.create(ApiService.class);
 
-        apiService.getBeats().enqueue(new Callback<List<Beat>>() {
+        Call<List<Beat>> call;
+        if (query == null || query.isEmpty()) {
+            call = apiService.getBeats();
+        } else {
+            call = apiService.searchBeats(query, currentSearchField);
+        }
+
+        call.enqueue(new Callback<List<Beat>>() {
             @Override
             public void onResponse(Call<List<Beat>> call, Response<List<Beat>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    List<Beat> beatsFromServer = response.body();
                     beatList.clear();
-                    beatList.addAll(beatsFromServer);
+                    beatList.addAll(response.body());
                     adapter.notifyDataSetChanged();
+
+                    if (response.body().isEmpty() && !query.isEmpty()) {
+                        Toast.makeText(MainActivity.this, "Ничего не найдено", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(MainActivity.this,
                             "Ошибка сервера: " + response.code(),
@@ -205,11 +273,12 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
             @Override
             public void onFailure(Call<List<Beat>> call, Throwable t) {
                 Toast.makeText(MainActivity.this,
-                        "Ошибка соединения: " + t.getMessage(),
-                        Toast.LENGTH_LONG).show();
+                        "Ошибка соединения",
+                        Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
     @Override
     public void onPlayStarted(String trackName) {
@@ -234,5 +303,11 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
     @Override
     public void onPlayError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AudioPlayer.getInstance().setCallback(null);
     }
 }

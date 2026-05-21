@@ -38,16 +38,16 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.686" />
 
-    <Button
-        android:id="@+id/button_filter"
+    <Spinner
+        android:id="@+id/spinnerFilter"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginBottom="16dp"
         android:background="@drawable/rounded_background"
-        android:text="Filter"
+        android:dropDownWidth="200dp"
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.272"
+        app:layout_constraintHorizontal_bias="0.428"
         app:layout_constraintStart_toEndOf="@+id/searchView" />
 
     <androidx.recyclerview.widget.RecyclerView

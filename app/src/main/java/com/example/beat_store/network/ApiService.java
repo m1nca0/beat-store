@@ -56,4 +56,9 @@ public interface ApiService {
             @Part("price") RequestBody price,
             @Part("usernameproducer") RequestBody usernameProducer
     );
+    @GET("beats/search")
+    Call<List<Beat>> searchBeats(
+            @Query("query") String query,
+            @Query("field") String field
+    );
 }
