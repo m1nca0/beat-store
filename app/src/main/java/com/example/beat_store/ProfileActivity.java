@@ -2,6 +2,7 @@ package com.example.beat_store;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -41,7 +42,6 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
     private Button btnLogout;
     private ImageButton btnBack;
 
-    // Для битов продюсера
     private TextView tvMyBeatsTitle;
     private RecyclerView recyclerViewProducerBeats;
     private BeatAdapter producerBeatsAdapter;
@@ -55,7 +55,6 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
         AudioPlayer.getInstance().setCallback(this);
-        // Находим элементы профиля
         tvUsername = findViewById(R.id.tvUsername);
         tvRole = findViewById(R.id.tvRole);
         tvEmail = findViewById(R.id.tvEmail);
@@ -68,7 +67,6 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         btnBack = findViewById(R.id.btnBack);
 
 
-        // Элементы для битов продюсера
         tvMyBeatsTitle = findViewById(R.id.tvMyBeatsTitle);
         recyclerViewProducerBeats = findViewById(R.id.recyclerViewProducerBeats);
 
@@ -79,7 +77,6 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
             intent.putExtra("username", currentUsername);
             startActivity(intent);
         });
-        // Получаем данные из Intent
         Intent intent = getIntent();
         currentUsername = intent.getStringExtra("username");
         currentRole = intent.getStringExtra("role");
@@ -88,7 +85,6 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         double balance = intent.getDoubleExtra("balance", 0.0);
         String regDate = intent.getStringExtra("reg_date");
 
-        // Заполняем профиль
         tvUsername.setText(currentUsername != null ? currentUsername : "Гость");
         tvEmail.setText(email != null ? email : "—");
 
@@ -99,11 +95,9 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                 layoutArtistName.setVisibility(View.VISIBLE);
                 dividerArtist.setVisibility(View.VISIBLE);
             }
-            // Покупатель — показываем КУПЛЕННЫЕ биты
             tvMyBeatsTitle.setText("Мои покупки");
             tvMyBeatsTitle.setVisibility(View.VISIBLE);
             recyclerViewProducerBeats.setVisibility(View.VISIBLE);
-            setupProducerBeats();  // используем тот же метод
             loadCustomerBeats();
         } else if ("producer".equals(currentRole)) {
             tvRole.setText("Продюсер");
@@ -121,10 +115,8 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         tvBalance.setText(String.format("$%.2f", balance));
         tvRegDate.setText(regDate != null ? regDate : "—");
 
-        // Кнопка "Назад"
         btnBack.setOnClickListener(v -> finish());
 
-        // Кнопка "Выйти"
         btnLogout.setOnClickListener(v -> {
             Intent loginIntent = new Intent(ProfileActivity.this, LoginActivity.class);
             loginIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -132,7 +124,6 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
             finish();
         });
 
-        // Нижний навбар
         BottomNavigationView bottomNav = findViewById(R.id.bnb);
         bottomNav.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -151,32 +142,43 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                 finish();
                 return true;
             } else if (itemId == R.id.nav_profile) {
-                return true; // уже здесь
             }
             return false;
         });
     }
 
-    /**
-     * Настройка RecyclerView для битов продюсера
-     */
     private void setupProducerBeats() {
         producerBeatList = new ArrayList<>();
         recyclerViewProducerBeats.setLayoutManager(new LinearLayoutManager(this));
-        // Используем тот же адаптер BeatAdapter
+
         producerBeatsAdapter = new BeatAdapter(producerBeatList,
                 new BeatAdapter.OnBuyClickListener() {
                     @Override
                     public void onBuyClick(Beat beat, int position) {
-                        Toast.makeText(ProfileActivity.this,
-                                "Это ваш бит: " + beat.getTitle(),
-                                Toast.LENGTH_SHORT).show();
+                        if ("producer".equals(currentRole) && currentUsername != null
+                                && currentUsername.equals(beat.getUserNameProducer())) {
+                            Intent intent = new Intent(ProfileActivity.this, UploadBeatActivity.class);
+                            intent.putExtra("edit_mode", true);
+                            intent.putExtra("beat_id", beat.getId());
+                            intent.putExtra("beat_title", beat.getTitle());
+                            intent.putExtra("beat_genre", beat.getGenre());
+                            intent.putExtra("beat_bpm", beat.getBpm());
+                            intent.putExtra("beat_key", beat.getKey());
+                            intent.putExtra("beat_license", beat.getLicenseType());
+                            intent.putExtra("beat_price", beat.getPrice());
+                            intent.putExtra("beat_audio", beat.getAudioFile());
+                            intent.putExtra("username", currentUsername);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(ProfileActivity.this,
+                                    "Это ваш бит: " + beat.getTitle(),
+                                    Toast.LENGTH_SHORT).show();
+                        }
                     }
                 },
                 new BeatAdapter.OnBeatClickListener() {
                     @Override
                     public void onBeatClick(Beat beat, int position) {
-                        // Открываем карточку бита
                         Intent intent = new Intent(ProfileActivity.this, beat_card_activity.class);
                         intent.putExtra("beat_id", beat.getId());
                         intent.putExtra("beat_title", beat.getTitle());
@@ -196,14 +198,14 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                         String audioUrl = "http://10.0.2.2:8080" + beat.getAudioFile();
                         AudioPlayer.getInstance().togglePlay(audioUrl, beat.getTitle(), position);
                     }
-                });
+                }
+        );
+
+        producerBeatsAdapter.setCurrentUser(currentUsername, currentRole);
 
         recyclerViewProducerBeats.setAdapter(producerBeatsAdapter);
     }
 
-    /**
-     * Загрузка битов продюсера с бэкенда
-     */
     private void loadProducerBeats() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
@@ -217,6 +219,12 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
             public void onResponse(Call<List<Beat>> call, Response<List<Beat>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Beat> beats = response.body();
+                    if (producerBeatList == null) {
+                        producerBeatList = new ArrayList<>();
+                    }
+                    if (producerBeatsAdapter == null) {
+                        setupProducerBeats();
+                    }
                     producerBeatList.clear();
                     producerBeatList.addAll(beats);
                     producerBeatsAdapter.notifyDataSetChanged();
@@ -240,9 +248,6 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
             }
         });
     }
-    /**
-     * Загрузка купленных битов покупателя
-     */
     private void loadCustomerBeats() {
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("http://10.0.2.2:8080/")
@@ -256,8 +261,21 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
             public void onResponse(Call<List<Beat>> call, Response<List<Beat>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     List<Beat> beats = response.body();
+                    if (producerBeatList == null) {
+                        producerBeatList = new ArrayList<>();
+                    }
+
+                    if (producerBeatsAdapter == null) {
+                        setupProducerBeats();  // Создаст адаптер
+                    }
                     producerBeatList.clear();
                     producerBeatList.addAll(beats);
+                    if (!beats.isEmpty()) {
+                        Beat first = beats.get(0);
+                        Log.d("PROFILE_DEBUG", "Beat: title=" + first.getTitle()
+                                + " audioFile=" + first.getAudioFile()
+                                + " producer=" + first.getUserNameProducer());
+                    }
                     producerBeatsAdapter.notifyDataSetChanged();
 
                     if (beats.isEmpty()) {
@@ -291,7 +309,6 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         super.onDestroy();
         AudioPlayer.getInstance().setCallback(null);
     }
-    // ====== Реализация PlayerCallback ======
 
     @Override
     public void onPlayStarted(String trackName) {

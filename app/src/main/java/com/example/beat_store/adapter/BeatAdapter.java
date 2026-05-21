@@ -1,5 +1,6 @@
 package com.example.beat_store.adapter;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,25 +22,33 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
     private List<Beat> beatList;
 
     private OnBuyClickListener buyClickListener;
+    private OnBeatClickListener beatClickListener;
+    private OnPlayClickListener playClickListener;
+
+    private String currentUsername;
+    private String currentRole;
 
     public interface OnBuyClickListener {
         void onBuyClick(Beat beat, int position);
     }
-    public interface OnPlayClickListener {
-        void onPlayClick(Beat beat, int position);
-    }
-    private OnPlayClickListener playClickListener;
+
     public interface OnBeatClickListener {
         void onBeatClick(Beat beat, int position);
     }
-    private OnBeatClickListener beatClickListener;
+
+    public interface OnPlayClickListener {
+        void onPlayClick(Beat beat, int position);
+    }
+
     public BeatAdapter(List<Beat> beatList) {
         this.beatList = beatList;
     }
+
     public BeatAdapter(List<Beat> beatList, OnBuyClickListener listener) {
         this.beatList = beatList;
         this.buyClickListener = listener;
     }
+
     public BeatAdapter(List<Beat> beatList, OnBuyClickListener buyListener,
                        OnBeatClickListener beatListener, OnPlayClickListener playListener) {
         this.beatList = beatList;
@@ -47,12 +56,12 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
         this.beatClickListener = beatListener;
         this.playClickListener = playListener;
     }
-    public BeatAdapter(List<Beat> beatList, OnBuyClickListener buyListener,
-                       OnBeatClickListener beatListener) {
-        this.beatList = beatList;
-        this.buyClickListener = buyListener;
-        this.beatClickListener = beatListener;
+
+    public void setCurrentUser(String username, String role) {
+        this.currentUsername = username;
+        this.currentRole = role;
     }
+
     @NonNull
     @Override
     public BeatViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -70,17 +79,70 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
         holder.tvGenreBpm.setText(beat.getGenre() + " • " + beat.getBpm() + " BPM");
         holder.tvPrice.setText(String.format("$%.2f", beat.getPrice()));
 
+        // ====== ЛОГИКА КНОПКИ ======
+        String producerUsername = beat.getUserNameProducer();
+        String beatOwner = beat.getOwner();
+        String username = currentUsername;
+        String role = currentRole;
 
-        holder.btnBuy.setOnClickListener(v -> {
-            if (buyClickListener != null) {
-                buyClickListener.onBuyClick(beat, position);
-            }
-        });
+        Log.d("BEAT_ADAPTER", "BTN: username=" + username + " role=" + role
+                + " producer=" + producerUsername + " beat=" + beat.getTitle());
+
+        // 1. Продюсер → СВОЙ бит → "Изменить"
+        if (username != null && "producer".equals(role)
+                && producerUsername != null && producerUsername.equals(username)) {
+            holder.btnBuy.setText("Изменить");
+            holder.btnBuy.setVisibility(View.VISIBLE);
+            holder.btnBuy.setEnabled(true);
+            holder.btnBuy.setOnClickListener(v -> {
+                if (buyClickListener != null) {
+                    buyClickListener.onBuyClick(beat, position);
+                }
+            });
+        }
+        // 2. Покупатель → бит УЖЕ куплен ИМ → "Куплено ✓"
+        else if (username != null && "customer".equals(role)
+                && beatOwner != null && beatOwner.equals(username)) {
+            holder.btnBuy.setText("Куплено ✓");
+            holder.btnBuy.setVisibility(View.VISIBLE);
+            holder.btnBuy.setEnabled(false);
+            holder.btnBuy.setOnClickListener(null);
+        }
+        // 3. Покупатель → бит НЕ куплен → "Купить"
+        else if (username != null && "customer".equals(role)) {
+            holder.btnBuy.setText("Купить");
+            holder.btnBuy.setVisibility(View.VISIBLE);
+            holder.btnBuy.setEnabled(true);
+            holder.btnBuy.setOnClickListener(v -> {
+                if (buyClickListener != null) {
+                    buyClickListener.onBuyClick(beat, position);
+                }
+            });
+        }
+        // 4. Продюсер → ЧУЖОЙ бит → скрыть
+        else if (username != null && "producer".equals(role)) {
+            holder.btnBuy.setVisibility(View.GONE);
+        }
+        // 5. Не вошёл → "Купить"
+        else {
+            holder.btnBuy.setText("Купить");
+            holder.btnBuy.setVisibility(View.VISIBLE);
+            holder.btnBuy.setEnabled(true);
+            holder.btnBuy.setOnClickListener(v -> {
+                if (buyClickListener != null) {
+                    buyClickListener.onBuyClick(beat, position);
+                }
+            });
+        }
+
+        // ====== КЛИК ПО ОБЛОЖКЕ ======
         holder.ivCover.setOnClickListener(v -> {
             if (beatClickListener != null) {
                 beatClickListener.onBeatClick(beat, position);
             }
         });
+
+        // ====== КНОПКА PLAY ======
         holder.btnPlayPreview.setOnClickListener(v -> {
             if (playClickListener != null) {
                 playClickListener.onPlayClick(beat, position);

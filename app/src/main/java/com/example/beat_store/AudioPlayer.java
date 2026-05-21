@@ -4,27 +4,21 @@ import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.util.Log;
 import android.widget.Toast;
-
-/**
- * Глобальный аудиоплеер (Singleton).
- * Живёт всё время работы приложения.
- * Можно вызывать из любой Activity.
- */
 public class AudioPlayer {
 
-    // Единственный экземпляр (Singleton)
+
     private static AudioPlayer instance;
 
-    // Сам MediaPlayer
+
     private MediaPlayer mediaPlayer;
 
-    // Какой трек сейчас играет (позиция в списке или -1)
+
     private int currentPosition = -1;
 
-    // URL текущего трека
+
     private String currentUrl = null;
 
-    // Колбэк для UI (показать Toast, обновить кнопку)
+
     private PlayerCallback callback;
 
     /**
@@ -32,14 +26,14 @@ public class AudioPlayer {
      * Activity должна реализовать этот интерфейс.
      */
     public interface PlayerCallback {
-        void onPlayStarted(String trackName);   // Началось воспроизведение
-        void onPlayPaused();                     // Пауза
-        void onPlayResumed();                    // Продолжили
-        void onPlayCompleted();                  // Трек закончился
-        void onPlayError(String error);          // Ошибка
+        void onPlayStarted(String trackName);
+        void onPlayPaused();
+        void onPlayResumed();
+        void onPlayCompleted();
+        void onPlayError(String error);
     }
 
-    // Приватный конструктор (нельзя создать снаружи)
+
     private AudioPlayer() {}
 
     /**
@@ -68,25 +62,25 @@ public class AudioPlayer {
      */
     public void togglePlay(String audioUrl, String trackName, int position) {
         Log.d("AUDIO_PLAYER", "togglePlay: url=" + audioUrl + " pos=" + position + " currentPos=" + currentPosition);
+        Log.d("AUDIO_PLAYER", "togglePlay: url=" + audioUrl + " trackName=" + trackName);
 
-        // ===== СЛУЧАЙ 1: Нажали тот же трек =====
         if (currentPosition == position && mediaPlayer != null) {
             if (mediaPlayer.isPlaying()) {
-                // Играет → пауза
+
                 mediaPlayer.pause();
                 if (callback != null) callback.onPlayPaused();
             } else {
-                // На паузе → продолжить
+
                 mediaPlayer.start();
                 if (callback != null) callback.onPlayResumed();
             }
             return;
         }
 
-        // ===== СЛУЧАЙ 2: Другой трек → сбросить старый =====
+
         release();
 
-        // Создаём новый плеер
+
         mediaPlayer = new MediaPlayer();
         mediaPlayer.setAudioAttributes(
                 new AudioAttributes.Builder()

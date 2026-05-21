@@ -4,7 +4,7 @@ public class Beat {
     private Long id;
     private String title;
 
-    private String userNameProducer;
+    private String usernameproducer;
 
     private String genre;
     private int bpm;
@@ -13,34 +13,36 @@ public class Beat {
 
     private String audiofile;
 
-    private String licenseType;
+    private String licensetype;
 
     private double price;
+    private String owner;
 
     public Beat() {}
 
-    public Beat(Long id, String title, String userNameProducer, String genre,
-                int bpm, String key, String audiofile, String licenseType, double price) {
+    public Beat(Long id, String title, String usernameproducer, String genre,
+                int bpm, String key, String audiofile, String licensetype, double price) {
         this.id = id;
         this.title = title;
-        this.userNameProducer = userNameProducer;
+        this.usernameproducer = usernameproducer;
         this.genre = genre;
         this.bpm = bpm;
         this.key = key;
         this.audiofile = audiofile;
-        this.licenseType = licenseType;
+        this.licensetype = licensetype;
         this.price = price;
     }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
+    public String getOwner() { return owner; }
+    public void setOwner(String owner) { this.owner = owner; }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
 
-    public String getUserNameProducer() { return userNameProducer; }
-    public void setUserNameProducer(String userNameProducer) {
-        this.userNameProducer = userNameProducer;
+    public String getUserNameProducer() { return usernameproducer; }
+    public void setUserNameProducer(String usernameproducer) {
+        this.usernameproducer = usernameproducer;
     }
 
     public String getGenre() { return genre; }
@@ -55,8 +57,8 @@ public class Beat {
     public String getAudioFile() { return audiofile; }
     public void setAudioFile(String audiofile) { this.audiofile = audiofile; }
 
-    public String getLicenseType() { return licenseType; }
-    public void setLicenseType(String licenseType) { this.licenseType = licenseType; }
+    public String getLicenseType() { return licensetype; }
+    public void setLicenseType(String licensetype) { this.licensetype = licensetype; }
 
     public double getPrice() { return price; }
     public void setPrice(double price) { this.price = price; }

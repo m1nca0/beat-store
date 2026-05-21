@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,7 +19,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.MediaType;
@@ -36,10 +34,14 @@ public class UploadBeatActivity extends AppCompatActivity {
 
     private TextInputEditText etTitle, etGenre, etBpm, etKey, etLicense, etPrice;
     private Button btnSelectFile, btnUpload;
-    private TextView tvSelectedFile;
+    private TextView tvSelectedFile, tvUploadTitle;
     private Uri selectedAudioUri;
     private String selectedFileName;
-    private ImageButton btnBack;
+
+    // Режим редактирования
+    private boolean isEditMode = false;
+    private Long editBeatId = null;
+    private String existingAudioFile = null;
 
     private final ActivityResultLauncher<String> filePickerLauncher =
             registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
@@ -55,6 +57,7 @@ public class UploadBeatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_beat);
 
+        tvUploadTitle = findViewById(R.id.tvUploadTitle);
         etTitle = findViewById(R.id.etTitle);
         etGenre = findViewById(R.id.etGenre);
         etBpm = findViewById(R.id.etBpm);
@@ -64,17 +67,35 @@ public class UploadBeatActivity extends AppCompatActivity {
         btnSelectFile = findViewById(R.id.btnSelectFile);
         btnUpload = findViewById(R.id.btnUpload);
         tvSelectedFile = findViewById(R.id.tvSelectedFile);
-        btnBack = findViewById(R.id.btnBack);
 
-        btnBack.setOnClickListener(v -> finish());
+        // Проверяем, редактирование или создание
+        Intent intent = getIntent();
+        isEditMode = intent.getBooleanExtra("edit_mode", false);
 
-        // Выбор аудиофайла
-        btnSelectFile.setOnClickListener(v -> {
-            filePickerLauncher.launch("audio/*");
+        if (isEditMode) {
+            tvUploadTitle.setText("Редактировать бит");
+            btnUpload.setText("Сохранить");
+
+            editBeatId = intent.getLongExtra("beat_id", -1);
+            etTitle.setText(intent.getStringExtra("beat_title"));
+            etGenre.setText(intent.getStringExtra("beat_genre"));
+            etBpm.setText(String.valueOf(intent.getIntExtra("beat_bpm", 0)));
+            etKey.setText(intent.getStringExtra("beat_key"));
+            etLicense.setText(intent.getStringExtra("beat_license"));
+            etPrice.setText(String.valueOf(intent.getDoubleExtra("beat_price", 0.0)));
+            existingAudioFile = intent.getStringExtra("beat_audio");
+
+            tvSelectedFile.setText("Текущий файл: " + existingAudioFile);
+        }
+
+        btnSelectFile.setOnClickListener(v -> filePickerLauncher.launch("audio/*"));
+        btnUpload.setOnClickListener(v -> {
+            if (isEditMode) {
+                updateBeat();
+            } else {
+                uploadBeat();
+            }
         });
-
-        // Загрузка
-        btnUpload.setOnClickListener(v -> uploadBeat());
     }
 
     private String getFileName(Uri uri) {
@@ -112,15 +133,9 @@ public class UploadBeatActivity extends AppCompatActivity {
 
         int bpm = Integer.parseInt(bpmStr);
         double price = Double.parseDouble(priceStr);
-
         String username = getIntent().getStringExtra("username");
-        if (username == null) {
-            Toast.makeText(this, "Ошибка: не найден пользователь", Toast.LENGTH_SHORT).show();
-            return;
-        }
 
         try {
-            // Копируем файл во временную папку
             InputStream inputStream = getContentResolver().openInputStream(selectedAudioUri);
             File tempFile = new File(getCacheDir(), selectedFileName);
             FileOutputStream outputStream = new FileOutputStream(tempFile);
@@ -132,11 +147,9 @@ public class UploadBeatActivity extends AppCompatActivity {
             outputStream.close();
             inputStream.close();
 
-            // Создаём MultipartBody.Part для файла
             RequestBody requestFile = RequestBody.create(MediaType.parse("audio/*"), tempFile);
             MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", selectedFileName, requestFile);
 
-            // Текстовые поля
             RequestBody titleBody = RequestBody.create(MediaType.parse("text/plain"), title);
             RequestBody genreBody = RequestBody.create(MediaType.parse("text/plain"), genre);
             RequestBody bpmBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(bpm));
@@ -145,7 +158,6 @@ public class UploadBeatActivity extends AppCompatActivity {
             RequestBody priceBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(price));
             RequestBody usernameBody = RequestBody.create(MediaType.parse("text/plain"), username);
 
-            // Отправляем
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("http://10.0.2.2:8080/")
                     .addConverterFactory(GsonConverterFactory.create())
@@ -172,7 +184,90 @@ public class UploadBeatActivity extends AppCompatActivity {
             });
 
         } catch (Exception e) {
-            Toast.makeText(this, "Ошибка чтения файла: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Ошибка: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
+    }
+
+    /**
+     * Обновление существующего бита.
+     */
+    private void updateBeat() {
+        String title = etTitle.getText().toString().trim();
+        String genre = etGenre.getText().toString().trim();
+        String bpmStr = etBpm.getText().toString().trim();
+        String key = etKey.getText().toString().trim();
+        String license = etLicense.getText().toString().trim();
+        String priceStr = etPrice.getText().toString().trim();
+
+        if (title.isEmpty() || genre.isEmpty() || bpmStr.isEmpty() || key.isEmpty()
+                || license.isEmpty() || priceStr.isEmpty()) {
+            Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int bpm = Integer.parseInt(bpmStr);
+        double price = Double.parseDouble(priceStr);
+
+        RequestBody titleBody = RequestBody.create(MediaType.parse("text/plain"), title);
+        RequestBody genreBody = RequestBody.create(MediaType.parse("text/plain"), genre);
+        RequestBody bpmBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(bpm));
+        RequestBody keyBody = RequestBody.create(MediaType.parse("text/plain"), key);
+        RequestBody licenseBody = RequestBody.create(MediaType.parse("text/plain"), license);
+        RequestBody priceBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(price));
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        Call<Map<String, Object>> call;
+
+        if (selectedAudioUri != null) {
+            // Новый файл выбран
+            try {
+                InputStream inputStream = getContentResolver().openInputStream(selectedAudioUri);
+                File tempFile = new File(getCacheDir(), selectedFileName);
+                FileOutputStream outputStream = new FileOutputStream(tempFile);
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                }
+                outputStream.close();
+                inputStream.close();
+
+                RequestBody requestFile = RequestBody.create(MediaType.parse("audio/*"), tempFile);
+                MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", selectedFileName, requestFile);
+
+                call = apiService.updateBeat(editBeatId, filePart, titleBody, genreBody, bpmBody,
+                        keyBody, licenseBody, priceBody);
+            } catch (Exception e) {
+                Toast.makeText(this, "Ошибка чтения файла: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                return;
+            }
+        } else {
+            // Файл не меняли — передаём null
+            call = apiService.updateBeat(editBeatId, null, titleBody, genreBody, bpmBody,
+                    keyBody, licenseBody, priceBody);
+        }
+
+        call.enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (response.isSuccessful()) {
+                    Toast.makeText(UploadBeatActivity.this, "Бит обновлён!", Toast.LENGTH_SHORT).show();
+                    finish();
+                } else {
+                    Toast.makeText(UploadBeatActivity.this, "Ошибка: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Toast.makeText(UploadBeatActivity.this, "Ошибка: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }
