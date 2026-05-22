@@ -2,7 +2,7 @@ package com.example.beat_store.model;
 
 import java.time.LocalDate;
 public class Customer extends User {
-    private String artistName;
+    private String artist_name;
     public Customer(
             Long id,
             String username,
@@ -10,7 +10,7 @@ public class Customer extends User {
             String password,
             LocalDate registrationDate,
             double balance,
-            String artistName) {
+            String artist_name) {
         super(
                 id,
                 username,
@@ -18,13 +18,14 @@ public class Customer extends User {
                 password,
                 registrationDate,
                 balance);
-        this.artistName = artistName;
+        this.artist_name = artist_name;
     }
 
-    public String getArtistName() {
-        return artistName;
+    public String getArtist_name() {
+        return artist_name;
     }
-    public void setArtistName(String artistName) {
-        this.artistName = artistName;
+
+    public void setArtist_name(String artist_name) {
+        this.artist_name = artist_name;
     }
 }

@@ -160,7 +160,7 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
                         String username = getIntent().getStringExtra("username");
                         String role = getIntent().getStringExtra("role");
                         if ("producer".equals(role) && username != null
-                                && username.equals(beat.getUserNameProducer())) {
+                                && username.equals(beat.getUsernameproducer())) {
                             Intent intent = new Intent(MainActivity.this, UploadBeatActivity.class);
                             intent.putExtra("edit_mode", true);
                             intent.putExtra("beat_id", beat.getId());
@@ -168,9 +168,9 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
                             intent.putExtra("beat_genre", beat.getGenre());
                             intent.putExtra("beat_bpm", beat.getBpm());
                             intent.putExtra("beat_key", beat.getKey());
-                            intent.putExtra("beat_license", beat.getLicenseType());
+                            intent.putExtra("beat_license", beat.getLicensetype());
                             intent.putExtra("beat_price", beat.getPrice());
-                            intent.putExtra("beat_audio", beat.getAudioFile());
+                            intent.putExtra("beat_audio", beat.getAudiofilepath());
                             intent.putExtra("username", username);
                             startActivity(intent);
                             return;
@@ -228,13 +228,13 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
 
                         intent.putExtra("beat_id", beat.getId());
                         intent.putExtra("beat_title", beat.getTitle());
-                        intent.putExtra("beat_producer", beat.getUserNameProducer());
+                        intent.putExtra("beat_producer", beat.getUsernameproducer());
                         intent.putExtra("beat_genre", beat.getGenre());
                         intent.putExtra("beat_bpm", beat.getBpm());
                         intent.putExtra("beat_key", beat.getKey());
                         intent.putExtra("beat_price", beat.getPrice());
-                        intent.putExtra("beat_license", beat.getLicenseType());
-                        intent.putExtra("beat_audio", beat.getAudioFile());
+                        intent.putExtra("beat_license", beat.getLicensetype());
+                        intent.putExtra("beat_audio", beat.getAudiofilepath());
 
                         startActivity(intent);
                     }
@@ -242,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
                 new BeatAdapter.OnPlayClickListener() {
                     @Override
                     public void onPlayClick(Beat beat, int position) {
-                        String audioUrl = "http://10.0.2.2:8080" + beat.getAudioFile();
+                        String audioUrl = "http://10.0.2.2:8080" + beat.getAudiofilepath();
                         AudioPlayer.getInstance().togglePlay(audioUrl, beat.getTitle(), position);
                     }
                 }

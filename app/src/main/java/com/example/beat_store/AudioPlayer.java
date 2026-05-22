@@ -36,9 +36,6 @@ public class AudioPlayer {
 
     private AudioPlayer() {}
 
-    /**
-     * Получить единственный экземпляр плеера.
-     */
     public static AudioPlayer getInstance() {
         if (instance == null) {
             instance = new AudioPlayer();
@@ -46,20 +43,10 @@ public class AudioPlayer {
         return instance;
     }
 
-    /**
-     * Установить колбэк (Activity подписывается на события плеера).
-     */
     public void setCallback(PlayerCallback callback) {
         this.callback = callback;
     }
 
-    /**
-     * Главный метод: play или pause.
-     *
-     * @param audioUrl  полный URL аудиофайла (например http://10.0.2.2:8080/beat-store-media/123.mp3)
-     * @param trackName название трека (для Toast)
-     * @param position  позиция трека в списке (чтобы отличать треки)
-     */
     public void togglePlay(String audioUrl, String trackName, int position) {
         Log.d("AUDIO_PLAYER", "togglePlay: url=" + audioUrl + " pos=" + position + " currentPos=" + currentPosition);
         Log.d("AUDIO_PLAYER", "togglePlay: url=" + audioUrl + " trackName=" + trackName);

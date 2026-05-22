@@ -75,12 +75,12 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
         Beat beat = beatList.get(position);
 
         holder.tvTitle.setText(beat.getTitle());
-        holder.tvProducerName.setText(beat.getUserNameProducer());
+        holder.tvProducerName.setText(beat.getUsernameproducer());
         holder.tvGenreBpm.setText(beat.getGenre() + " • " + beat.getBpm() + " BPM");
         holder.tvPrice.setText(String.format("$%.2f", beat.getPrice()));
 
         // ====== ЛОГИКА КНОПКИ ======
-        String producerUsername = beat.getUserNameProducer();
+        String producerUsername = beat.getUsernameproducer();
         String beatOwner = beat.getOwner();
         String username = currentUsername;
         String role = currentRole;

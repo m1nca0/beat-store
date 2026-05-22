@@ -11,55 +11,105 @@ public class Beat {
 
     private String key;
 
-    private String audiofile;
+    private String audiofilepath;
 
     private String licensetype;
 
-    private double price;
+    private Double price;
     private String owner;
 
     public Beat() {}
 
     public Beat(Long id, String title, String usernameproducer, String genre,
-                int bpm, String key, String audiofile, String licensetype, double price) {
+                int bpm, String key, String audiofilepath, String licensetype, Double price) {
         this.id = id;
         this.title = title;
         this.usernameproducer = usernameproducer;
         this.genre = genre;
         this.bpm = bpm;
         this.key = key;
-        this.audiofile = audiofile;
+        this.audiofilepath = audiofilepath;
         this.licensetype = licensetype;
         this.price = price;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getOwner() { return owner; }
-    public void setOwner(String owner) { this.owner = owner; }
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getUserNameProducer() { return usernameproducer; }
-    public void setUserNameProducer(String usernameproducer) {
+    public String getTitle() {
+        return title;
+    }
+
+    public String getUsernameproducer() {
+        return usernameproducer;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public int getBpm() {
+        return bpm;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public String getAudiofilepath() {
+        return audiofilepath;
+    }
+
+    public String getLicensetype() {
+        return licensetype;
+    }
+
+    public Double getPrice() {
+        return price;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setUsernameproducer(String usernameproducer) {
         this.usernameproducer = usernameproducer;
     }
 
-    public String getGenre() { return genre; }
-    public void setGenre(String genre) { this.genre = genre; }
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
 
-    public int getBpm() { return bpm; }
-    public void setBpm(int bpm) { this.bpm = bpm; }
+    public void setBpm(int bpm) {
+        this.bpm = bpm;
+    }
 
-    public String getKey() { return key; }
-    public void setKey(String key) { this.key = key; }
+    public void setKey(String key) {
+        this.key = key;
+    }
 
-    public String getAudioFile() { return audiofile; }
-    public void setAudioFile(String audiofile) { this.audiofile = audiofile; }
+    public void setAudiofilepath(String audiofilepath) {
+        this.audiofilepath = audiofilepath;
+    }
 
-    public String getLicenseType() { return licensetype; }
-    public void setLicenseType(String licensetype) { this.licensetype = licensetype; }
+    public void setLicensetype(String licensetype) {
+        this.licensetype = licensetype;
+    }
 
-    public double getPrice() { return price; }
-    public void setPrice(double price) { this.price = price; }
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
 }

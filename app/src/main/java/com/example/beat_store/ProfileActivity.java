@@ -163,7 +163,7 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                     @Override
                     public void onBuyClick(Beat beat, int position) {
                         if ("producer".equals(currentRole) && currentUsername != null
-                                && currentUsername.equals(beat.getUserNameProducer())) {
+                                && currentUsername.equals(beat.getUsernameproducer())) {
                             Intent intent = new Intent(ProfileActivity.this, UploadBeatActivity.class);
                             intent.putExtra("edit_mode", true);
                             intent.putExtra("beat_id", beat.getId());
@@ -171,9 +171,9 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                             intent.putExtra("beat_genre", beat.getGenre());
                             intent.putExtra("beat_bpm", beat.getBpm());
                             intent.putExtra("beat_key", beat.getKey());
-                            intent.putExtra("beat_license", beat.getLicenseType());
+                            intent.putExtra("beat_license", beat.getLicensetype());
                             intent.putExtra("beat_price", beat.getPrice());
-                            intent.putExtra("beat_audio", beat.getAudioFile());
+                            intent.putExtra("beat_audio", beat.getAudiofilepath());
                             intent.putExtra("username", currentUsername);
                             startActivity(intent);
                         } else {
@@ -189,20 +189,20 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                         Intent intent = new Intent(ProfileActivity.this, beat_card_activity.class);
                         intent.putExtra("beat_id", beat.getId());
                         intent.putExtra("beat_title", beat.getTitle());
-                        intent.putExtra("beat_producer", beat.getUserNameProducer());
+                        intent.putExtra("beat_producer", beat.getUsernameproducer());
                         intent.putExtra("beat_genre", beat.getGenre());
                         intent.putExtra("beat_bpm", beat.getBpm());
                         intent.putExtra("beat_key", beat.getKey());
                         intent.putExtra("beat_price", beat.getPrice());
-                        intent.putExtra("beat_license", beat.getLicenseType());
-                        intent.putExtra("beat_audio", beat.getAudioFile());
+                        intent.putExtra("beat_license", beat.getLicensetype());
+                        intent.putExtra("beat_audio", beat.getAudiofilepath());
                         startActivity(intent);
                     }
                 },
                 new BeatAdapter.OnPlayClickListener() {
                     @Override
                     public void onPlayClick(Beat beat, int position) {
-                        String audioUrl = "http://10.0.2.2:8080" + beat.getAudioFile();
+                        String audioUrl = "http://10.0.2.2:8080" + beat.getAudiofilepath();
                         AudioPlayer.getInstance().togglePlay(audioUrl, beat.getTitle(), position);
                     }
                 }
@@ -272,27 +272,27 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                         producerBeatList = new ArrayList<>();
                     }
 
+                    // ВАЖНО: Проверяем, инициализирован ли адаптер
                     if (producerBeatsAdapter == null) {
-                        setupProducerBeats();  // Создаст адаптер
+                        setupProducerBeats();
                     }
+
                     producerBeatList.clear();
                     producerBeatList.addAll(beats);
-                    if (!beats.isEmpty()) {
-                        Beat first = beats.get(0);
-                        Log.d("PROFILE_DEBUG", "Beat: title=" + first.getTitle()
-                                + " audioFile=" + first.getAudioFile()
-                                + " producer=" + first.getUserNameProducer());
-                    }
                     producerBeatsAdapter.notifyDataSetChanged();
 
                     if (beats.isEmpty()) {
-                        Toast.makeText(ProfileActivity.this,
-                                "У вас пока нет купленных битов", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(ProfileActivity.this, "У вас пока нет купленных битов", Toast.LENGTH_SHORT).show();
                     }
                 } else {
-                    Toast.makeText(ProfileActivity.this,
-                            "Ошибка загрузки битов: " + response.code(),
-                            Toast.LENGTH_SHORT).show();
+                    // Если сервер вернул 500, давай прочитаем тело ошибки, которое прислал Spring!
+                    try {
+                        String errorBody = response.errorBody() != null ? response.errorBody().string() : "Неизвестно";
+                        Log.e("SERVER_ERROR", "Код: " + response.code() + " Текст: " + errorBody);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(ProfileActivity.this, "Ошибка загрузки битов: " + response.code(), Toast.LENGTH_SHORT).show();
                 }
             }
 

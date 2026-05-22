@@ -5,7 +5,7 @@ public abstract class User {
     private String username;
     private String email;
     private String password;
-    private LocalDate registrationDate;
+    private LocalDate reg_date;
     private double balance;
 
     public User(
@@ -13,13 +13,13 @@ public abstract class User {
             String username,
             String email,
             String password,
-            LocalDate registrationDate,
+            LocalDate reg_date,
             double balance) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.password = password;
-        this.registrationDate = registrationDate;
+        this.reg_date = reg_date;
         this.balance = balance;
     }
 
@@ -39,8 +39,8 @@ public abstract class User {
         return password;
     }
 
-    public LocalDate getRegistrationDate() {
-        return registrationDate;
+    public LocalDate getReg_date() {
+        return reg_date;
     }
 
     public double getBalance() {
@@ -63,8 +63,8 @@ public abstract class User {
         this.password = password;
     }
 
-    public void setRegistrationDate(LocalDate registrationDate) {
-        this.registrationDate = registrationDate;
+    public void setReg_date(LocalDate reg_date) {
+        this.reg_date = reg_date;
     }
 
     public void setBalance(double balance) {
