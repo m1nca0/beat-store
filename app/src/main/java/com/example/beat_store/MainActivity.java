@@ -203,8 +203,14 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
                                     String message = String.valueOf(response.body().get("message"));
                                     Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
 
-                                    // Перезагружаем биты, чтобы обновить owner
                                     performSearch(searchView.getQuery().toString());
+                                } else {
+                                    try {
+                                        String errorBody = response.errorBody().string();
+                                        Toast.makeText(MainActivity.this, "Ошибка: " + response.code(), Toast.LENGTH_SHORT).show();
+                                    } catch (Exception e) {
+                                        Toast.makeText(MainActivity.this, "Ошибка: " + response.code(), Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             }
 

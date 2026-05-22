@@ -72,4 +72,6 @@ public interface ApiService {
             @Part("licenseType") RequestBody licenseType,
             @Part("price") RequestBody price
     );
+    @POST("profile/top-up")
+    Call<Map<String, Object>> topUpBalance(@Body Map<String, Object> request);
 }

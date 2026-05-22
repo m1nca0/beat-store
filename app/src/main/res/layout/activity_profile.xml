@@ -44,48 +44,55 @@
         app:layout_constraintBottom_toBottomOf="@id/btnBack" />
 
     <!-- Аватарка (заглушка) -->
+
+    <!-- Информация пользователя -->
+
     <ImageView
         android:id="@+id/ivAvatar"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_marginTop="20dp"
         android:background="@drawable/rounded_background"
         android:scaleType="center"
         android:src="@android:drawable/ic_menu_my_calendar"
-        android:layout_marginTop="24dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.051"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/view" />
 
-    <!-- Информация пользователя -->
     <TextView
         android:id="@+id/tvUsername"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:text="username"
+        android:textAlignment="center"
+        android:textColor="#000000"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#000000"
-        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.051"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
 
+    <!-- Карточка с деталями -->
     <TextView
         android:id="@+id/tvRole"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Роль"
-        android:textSize="14sp"
-        android:textColor="#FF6200EE"
         android:layout_marginTop="4dp"
+        android:text="Роль"
+        android:textAlignment="center"
+        android:textColor="#FF6200EE"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.134"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvUsername" />
 
-    <!-- Карточка с деталями -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardInfo"
-        android:layout_width="0dp"
+        android:layout_width="270dp"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         app:cardCornerRadius="16dp"
@@ -94,128 +101,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvRole">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <!-- Email -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="12dp">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Email"
-                    android:textSize="14sp"
-                    android:textColor="#999999" />
-
-                <TextView
-                    android:id="@+id/tvEmail"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="email@example.com"
-                    android:textSize="14sp"
-                    android:textColor="#000000" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEE" />
-
-            <!-- Имя артиста (только для покупателя) -->
-            <LinearLayout
-                android:id="@+id/layoutArtistName"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="12dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Артист"
-                    android:textSize="14sp"
-                    android:textColor="#999999" />
-
-                <TextView
-                    android:id="@+id/tvArtistName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Имя артиста"
-                    android:textSize="14sp"
-                    android:textColor="#000000" />
-            </LinearLayout>
-
-            <View
-                android:id="@+id/dividerArtist"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEE"
-                android:visibility="gone" />
-
-            <!-- Баланс -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="12dp">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="Баланс"
-                    android:textSize="14sp"
-                    android:textColor="#999999" />
-
-                <TextView
-                    android:id="@+id/tvBalance"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="$0.00"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    android:textColor="#4CAF50" />
-            </LinearLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#EEEEEE" />
-
-            <!-- Дата регистрации -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingVertical="12dp">
-
-                <TextView
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:text="На сайте с"
-                    android:textSize="14sp"
-                    android:textColor="#999999" />
-
-                <TextView
-                    android:id="@+id/tvRegDate"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="01.01.2026"
-                    android:textSize="14sp"
-                    android:textColor="#000000" />
-            </LinearLayout>
-        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
     <!-- Кнопка выхода -->
@@ -238,20 +123,34 @@
         app:layout_constraintTop_toBottomOf="@id/cardInfo"
         app:strokeColor="#FF6200EE"
         app:strokeWidth="2dp" />
+    <Button
+        android:id="@+id/btnTopUp"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:text="Пополнить баланс"
+        android:textSize="14sp"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#4CAF50"
+        app:cornerRadius="12dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnLogout" />
 
     <TextView
         android:id="@+id/tvMyBeatsTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
         android:text="Мои биты"
+        android:textColor="#000000"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:textColor="#000000"
         android:visibility="gone"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnUploadBeat" />
+        app:layout_constraintTop_toBottomOf="@+id/btnTopUp" />
     <!-- Кнопка "Загрузить бит" (видна только продюсеру) -->
     <Button
         android:id="@+id/btnUploadBeat"
@@ -292,5 +191,125 @@
         app:menu="@menu/bottom_nav_menu"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:layout_width="270dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        app:layout_constraintBottom_toTopOf="@+id/cardInfo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.36"
+        app:layout_constraintStart_toEndOf="@+id/ivAvatar"
+        app:layout_constraintTop_toBottomOf="@+id/view"
+        app:layout_constraintVertical_bias="0.311">
+
+        <!-- Email -->
+        <LinearLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="12dp">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Email"
+                android:textColor="#999999"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvEmail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="email@example.com"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+
+        <!-- Имя артиста (только для покупателя) -->
+        <LinearLayout
+            android:id="@+id/layoutArtistName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="12dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Артист"
+                android:textColor="#999999"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvArtistName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Имя артиста"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/dividerArtist"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#EEEEEE"
+            android:visibility="gone" />
+
+        <!-- Баланс -->
+        <LinearLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="12dp">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="Баланс"
+                android:textColor="#999999"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvBalance"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="$0.00"
+                android:textColor="#4CAF50"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Дата регистрации -->
+        <LinearLayout
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="12dp">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="На сайте с"
+                android:textColor="#999999"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tvRegDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="01.01.2026"
+                android:textColor="#000000"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

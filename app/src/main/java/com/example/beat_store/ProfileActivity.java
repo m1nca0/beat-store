@@ -28,6 +28,10 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import android.app.AlertDialog;
+import com.google.android.material.textfield.TextInputEditText;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileActivity extends AppCompatActivity implements AudioPlayer.PlayerCallback{
 
@@ -64,6 +68,7 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         layoutArtistName = findViewById(R.id.layoutArtistName);
         dividerArtist = findViewById(R.id.dividerArtist);
         btnLogout = findViewById(R.id.btnLogout);
+        Button btnTopUp = findViewById(R.id.btnTopUp);
         btnBack = findViewById(R.id.btnBack);
 
 
@@ -123,6 +128,8 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
             startActivity(loginIntent);
             finish();
         });
+        btnTopUp.setOnClickListener(v -> showTopUpDialog());
+
 
         BottomNavigationView bottomNav = findViewById(R.id.bnb);
         bottomNav.setOnItemSelectedListener(item -> {
@@ -333,5 +340,103 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
     @Override
     public void onPlayError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+    }
+    /**
+     * Показывает диалог пополнения баланса.
+     */
+    private void showTopUpDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_topup, null);
+        builder.setView(dialogView);
+
+        TextInputEditText etAmount = dialogView.findViewById(R.id.etAmount);
+        Button btnCancel = dialogView.findViewById(R.id.btnCancel);
+        Button btnConfirm = dialogView.findViewById(R.id.btnConfirm);
+
+        AlertDialog dialog = builder.create();
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        btnConfirm.setOnClickListener(v -> {
+            String amountStr = etAmount.getText().toString().trim();
+            if (amountStr.isEmpty()) {
+                Toast.makeText(this, "Введите сумму", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double amount = Double.parseDouble(amountStr);
+            if (amount <= 0) {
+                Toast.makeText(this, "Сумма должна быть больше 0", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            topUpBalance(amount);
+            dialog.dismiss();
+        });
+
+        dialog.show();
+    }
+
+    /**
+     * Отправляет запрос на пополнение баланса.
+     */
+    private void topUpBalance(double amount) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("username", currentUsername);
+        request.put("amount", amount);
+        request.put("role", currentRole);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        apiService.topUpBalance(request).enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    String message = String.valueOf(response.body().get("message"));
+                    Toast.makeText(ProfileActivity.this, message, Toast.LENGTH_SHORT).show();
+
+                    // Перезагружаем профиль, чтобы обновить баланс
+                    reloadProfile();
+                } else {
+                    Toast.makeText(ProfileActivity.this, "Ошибка: " + response.code(), Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {
+                Toast.makeText(ProfileActivity.this, "Ошибка: " + t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    /**
+     * Перезагружает данные профиля с бэкенда.
+     */
+    private void reloadProfile() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://10.0.2.2:8080/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        ApiService apiService = retrofit.create(ApiService.class);
+
+        apiService.getProfile(currentUsername, currentRole).enqueue(new Callback<Map<String, Object>>() {
+            @Override
+            public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    Map<String, Object> profile = response.body();
+                    double newBalance = Double.parseDouble(String.valueOf(profile.get("balance")));
+                    tvBalance.setText(String.format("$%.2f", newBalance));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Map<String, Object>> call, Throwable t) {}
+        });
     }
 }
