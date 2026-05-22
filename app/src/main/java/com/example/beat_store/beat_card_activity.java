@@ -28,14 +28,14 @@ public class beat_card_activity extends AppCompatActivity implements AudioPlayer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_beat_card);
 
-        // Подписываемся на плеер
+
         AudioPlayer.getInstance().setCallback(this);
 
-        // Кнопка назад
+
         ImageButton btnBack = findViewById(R.id.imageButton);
         btnBack.setOnClickListener(v -> finish());
 
-        // Получаем данные
+
         title = getIntent().getStringExtra("beat_title");
         String producer = getIntent().getStringExtra("beat_producer");
         String genre = getIntent().getStringExtra("beat_genre");
@@ -45,7 +45,7 @@ public class beat_card_activity extends AppCompatActivity implements AudioPlayer
         String license = getIntent().getStringExtra("beat_license");
         audioFile = getIntent().getStringExtra("beat_audio");
 
-        // Находим элементы
+
         TextView tv_title = findViewById(R.id.tv_title);
         TextView tv_prod = findViewById(R.id.tv_prod);
         TextView tv_genre = findViewById(R.id.tv_genre);
@@ -58,7 +58,7 @@ public class beat_card_activity extends AppCompatActivity implements AudioPlayer
         tvCurrentTime = findViewById(R.id.tvCurrentTime);
         tvTotalTime = findViewById(R.id.tvTotalTime);
 
-        // Заполняем поля
+
         tv_title.setText(title != null ? title : "—");
         tv_prod.setText(producer != null ? producer : "—");
         tv_genre.setText(genre != null ? genre : "—");
@@ -67,13 +67,13 @@ public class beat_card_activity extends AppCompatActivity implements AudioPlayer
         tv_license.setText(license != null ? license : "—");
         tv_cost.setText(String.format("$%.2f", price));
 
-        // Кнопка Play
+
         btnPlay.setOnClickListener(v -> {
             String audioUrl = "http://10.0.2.2:8080" + audioFile;
             AudioPlayer.getInstance().togglePlay(audioUrl, title, -1);
         });
 
-        // SeekBar — перемотка
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -84,24 +84,19 @@ public class beat_card_activity extends AppCompatActivity implements AudioPlayer
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // Останавливаем обновление SeekBar, пока пользователь двигает
+
                 stopSeekBarUpdate();
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // Возобновляем обновление
                 startSeekBarUpdate();
             }
         });
 
-        // Запускаем обновление SeekBar
         startSeekBarUpdate();
     }
 
-    /**
-     * Запускает периодическое обновление SeekBar (каждые 200 мс).
-     */
     private void startSeekBarUpdate() {
         if (updateSeekBarRunnable != null) {
             handler.removeCallbacks(updateSeekBarRunnable);
@@ -123,7 +118,7 @@ public class beat_card_activity extends AppCompatActivity implements AudioPlayer
                     tvTotalTime.setText(formatTime(duration));
                 }
 
-                // Продолжаем обновление только если трек играет
+
                 if (player.isPlaying() || player.isPaused()) {
                     handler.postDelayed(this, 200);
                 }
@@ -133,18 +128,12 @@ public class beat_card_activity extends AppCompatActivity implements AudioPlayer
         handler.post(updateSeekBarRunnable);
     }
 
-    /**
-     * Останавливает обновление SeekBar.
-     */
     private void stopSeekBarUpdate() {
         if (updateSeekBarRunnable != null) {
             handler.removeCallbacks(updateSeekBarRunnable);
         }
     }
 
-    /**
-     * Форматирует миллисекунды в строку "M:SS".
-     */
     private String formatTime(int millis) {
         int totalSeconds = millis / 1000;
         int minutes = totalSeconds / 60;
@@ -152,7 +141,6 @@ public class beat_card_activity extends AppCompatActivity implements AudioPlayer
         return String.format("%d:%02d", minutes, seconds);
     }
 
-    // ====== PlayerCallback ======
 
     @Override
     public void onPlayStarted(String trackName) {

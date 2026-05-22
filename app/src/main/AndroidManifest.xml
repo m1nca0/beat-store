@@ -15,19 +15,10 @@
         android:theme="@style/Theme.Beatstore"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".DialogTopupActivity"
-            android:exported="false" />
-        <activity
-            android:name=".DialogFilterActivity"
-            android:exported="false" />
-        <activity
             android:name=".UploadBeatActivity"
             android:exported="false" />
         <activity
             android:name=".ProfileActivity"
-            android:exported="false" />
-        <activity
-            android:name=".user_card_activity"
             android:exported="false" />
         <activity
             android:name=".beat_card_activity"

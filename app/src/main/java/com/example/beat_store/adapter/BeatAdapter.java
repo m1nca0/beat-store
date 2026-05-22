@@ -79,16 +79,11 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
         holder.tvGenreBpm.setText(beat.getGenre() + " • " + beat.getBpm() + " BPM");
         holder.tvPrice.setText(String.format("$%.2f", beat.getPrice()));
 
-        // ====== ЛОГИКА КНОПКИ ======
         String producerUsername = beat.getUsernameproducer();
         String beatOwner = beat.getOwner();
         String username = currentUsername;
         String role = currentRole;
 
-        Log.d("BEAT_ADAPTER", "BTN: username=" + username + " role=" + role
-                + " producer=" + producerUsername + " beat=" + beat.getTitle());
-
-        // 1. Продюсер → СВОЙ бит → "Изменить"
         if (username != null && "producer".equals(role)
                 && producerUsername != null && producerUsername.equals(username)) {
             holder.btnBuy.setText("Изменить");
@@ -100,7 +95,6 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
                 }
             });
         }
-        // 2. Покупатель → бит УЖЕ куплен ИМ → "Куплено ✓"
         else if (username != null && "customer".equals(role)
                 && beatOwner != null && beatOwner.equals(username)) {
             holder.btnBuy.setText("Куплено ✓");
@@ -108,7 +102,6 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
             holder.btnBuy.setEnabled(false);
             holder.btnBuy.setOnClickListener(null);
         }
-        // 3. Покупатель → бит НЕ куплен → "Купить"
         else if (username != null && "customer".equals(role)) {
             holder.btnBuy.setText("Купить");
             holder.btnBuy.setVisibility(View.VISIBLE);
@@ -119,11 +112,9 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
                 }
             });
         }
-        // 4. Продюсер → ЧУЖОЙ бит → скрыть
         else if (username != null && "producer".equals(role)) {
             holder.btnBuy.setVisibility(View.GONE);
         }
-        // 5. Не вошёл → "Купить"
         else {
             holder.btnBuy.setText("Купить");
             holder.btnBuy.setVisibility(View.VISIBLE);
@@ -135,14 +126,12 @@ public class BeatAdapter extends RecyclerView.Adapter<BeatAdapter.BeatViewHolder
             });
         }
 
-        // ====== КЛИК ПО ОБЛОЖКЕ ======
         holder.ivCover.setOnClickListener(v -> {
             if (beatClickListener != null) {
                 beatClickListener.onBeatClick(beat, position);
             }
         });
 
-        // ====== КНОПКА PLAY ======
         holder.btnPlayPreview.setOnClickListener(v -> {
             if (playClickListener != null) {
                 playClickListener.onPlayClick(beat, position);

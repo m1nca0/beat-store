@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.beat_store.adapter.BeatAdapter;
 import com.example.beat_store.model.Beat;
 import com.example.beat_store.network.ApiService;
+import com.example.beat_store.network.RetrofitClient;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
@@ -56,12 +57,7 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
             if (itemId == R.id.nav_home) {
                 return true;
             } else if (itemId == R.id.nav_profile) {
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("http://10.0.2.2:8080/")
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-
-                ApiService apiService = retrofit.create(ApiService.class);
+                ApiService apiService = RetrofitClient.getApiService();
 
                 String username = getIntent().getStringExtra("username");
                 String role = getIntent().getStringExtra("role");
@@ -189,12 +185,7 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
                         request.put("beatId", beat.getId());
                         request.put("buyerUsername", username);
 
-                        Retrofit retrofit = new Retrofit.Builder()
-                                .baseUrl("http://10.0.2.2:8080/")
-                                .addConverterFactory(GsonConverterFactory.create())
-                                .build();
-
-                        ApiService apiService = retrofit.create(ApiService.class);
+                        ApiService apiService = RetrofitClient.getApiService();
 
                         apiService.buyBeat(request).enqueue(new Callback<Map<String, Object>>() {
                             @Override
@@ -255,12 +246,7 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
         performSearch("");
     }
     private void performSearch(String query) {
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ApiService apiService = retrofit.create(ApiService.class);
+        ApiService apiService = RetrofitClient.getApiService();
 
         Call<List<Beat>> call;
         if (query == null || query.isEmpty()) {

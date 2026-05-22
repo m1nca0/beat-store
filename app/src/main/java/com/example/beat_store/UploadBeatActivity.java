@@ -14,6 +14,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.beat_store.network.ApiService;
+import com.example.beat_store.network.RetrofitClient;
 import com.google.android.material.textfield.TextInputEditText;
 
 import java.io.File;
@@ -38,19 +39,17 @@ public class UploadBeatActivity extends AppCompatActivity {
     private Uri selectedAudioUri;
     private String selectedFileName;
 
-    // Режим редактирования
     private boolean isEditMode = false;
     private Long editBeatId = null;
     private String existingAudioFile = null;
 
-    private final ActivityResultLauncher<String> filePickerLauncher =
-            registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
-                if (uri != null) {
-                    selectedAudioUri = uri;
-                    selectedFileName = getFileName(uri);
-                    tvSelectedFile.setText("Выбран: " + selectedFileName);
-                }
-            });
+    private final ActivityResultLauncher<String> filePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+        if (uri != null) {
+            selectedAudioUri = uri;
+            selectedFileName = getFileName(uri);
+            tvSelectedFile.setText("Выбран: " + selectedFileName);
+        }
+    });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +67,7 @@ public class UploadBeatActivity extends AppCompatActivity {
         btnUpload = findViewById(R.id.btnUpload);
         tvSelectedFile = findViewById(R.id.tvSelectedFile);
 
-        // Проверяем, редактирование или создание
+
         Intent intent = getIntent();
         isEditMode = intent.getBooleanExtra("edit_mode", false);
 
@@ -120,8 +119,7 @@ public class UploadBeatActivity extends AppCompatActivity {
         String license = etLicense.getText().toString().trim();
         String priceStr = etPrice.getText().toString().trim();
 
-        if (title.isEmpty() || genre.isEmpty() || bpmStr.isEmpty() || key.isEmpty()
-                || license.isEmpty() || priceStr.isEmpty()) {
+        if (title.isEmpty() || genre.isEmpty() || bpmStr.isEmpty() || key.isEmpty() || license.isEmpty() || priceStr.isEmpty()) {
             Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -158,15 +156,8 @@ public class UploadBeatActivity extends AppCompatActivity {
             RequestBody priceBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(price));
             RequestBody usernameBody = RequestBody.create(MediaType.parse("text/plain"), username);
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl("http://10.0.2.2:8080/")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            ApiService apiService = retrofit.create(ApiService.class);
-
-            apiService.uploadBeat(filePart, titleBody, genreBody, bpmBody, keyBody,
-                    licenseBody, priceBody, usernameBody).enqueue(new Callback<Map<String, Object>>() {
+            ApiService apiService = RetrofitClient.getApiService();
+            apiService.uploadBeat(filePart, titleBody, genreBody, bpmBody, keyBody, licenseBody, priceBody, usernameBody).enqueue(new Callback<Map<String, Object>>() {
                 @Override
                 public void onResponse(Call<Map<String, Object>> call, Response<Map<String, Object>> response) {
                     if (response.isSuccessful()) {
@@ -187,10 +178,6 @@ public class UploadBeatActivity extends AppCompatActivity {
             Toast.makeText(this, "Ошибка: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
-    /**
-     * Обновление существующего бита.
-     */
     private void updateBeat() {
         String title = etTitle.getText().toString().trim();
         String genre = etGenre.getText().toString().trim();
@@ -199,8 +186,7 @@ public class UploadBeatActivity extends AppCompatActivity {
         String license = etLicense.getText().toString().trim();
         String priceStr = etPrice.getText().toString().trim();
 
-        if (title.isEmpty() || genre.isEmpty() || bpmStr.isEmpty() || key.isEmpty()
-                || license.isEmpty() || priceStr.isEmpty()) {
+        if (title.isEmpty() || genre.isEmpty() || bpmStr.isEmpty() || key.isEmpty() || license.isEmpty() || priceStr.isEmpty()) {
             Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -215,17 +201,11 @@ public class UploadBeatActivity extends AppCompatActivity {
         RequestBody licenseBody = RequestBody.create(MediaType.parse("text/plain"), license);
         RequestBody priceBody = RequestBody.create(MediaType.parse("text/plain"), String.valueOf(price));
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("http://10.0.2.2:8080/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        ApiService apiService = retrofit.create(ApiService.class);
-
+        ApiService apiService = RetrofitClient.getApiService();
         Call<Map<String, Object>> call;
 
         if (selectedAudioUri != null) {
-            // Новый файл выбран
+
             try {
                 InputStream inputStream = getContentResolver().openInputStream(selectedAudioUri);
                 File tempFile = new File(getCacheDir(), selectedFileName);
@@ -241,16 +221,13 @@ public class UploadBeatActivity extends AppCompatActivity {
                 RequestBody requestFile = RequestBody.create(MediaType.parse("audio/*"), tempFile);
                 MultipartBody.Part filePart = MultipartBody.Part.createFormData("file", selectedFileName, requestFile);
 
-                call = apiService.updateBeat(editBeatId, filePart, titleBody, genreBody, bpmBody,
-                        keyBody, licenseBody, priceBody);
+                call = apiService.updateBeat(editBeatId, filePart, titleBody, genreBody, bpmBody, keyBody, licenseBody, priceBody);
             } catch (Exception e) {
                 Toast.makeText(this, "Ошибка чтения файла: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 return;
             }
         } else {
-            // Файл не меняли — передаём null
-            call = apiService.updateBeat(editBeatId, null, titleBody, genreBody, bpmBody,
-                    keyBody, licenseBody, priceBody);
+            call = apiService.updateBeat(editBeatId, null, titleBody, genreBody, bpmBody, keyBody, licenseBody, priceBody);
         }
 
         call.enqueue(new Callback<Map<String, Object>>() {
