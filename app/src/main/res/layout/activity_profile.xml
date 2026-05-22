@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="#FAFAFA">
 
-    <!-- Верхняя плашка (как в MainActivity) -->
     <View
         android:id="@+id/view"
         android:layout_width="match_parent"
@@ -43,9 +42,7 @@
         app:layout_constraintTop_toTopOf="@id/btnBack"
         app:layout_constraintBottom_toBottomOf="@id/btnBack" />
 
-    <!-- Аватарка (заглушка) -->
 
-    <!-- Информация пользователя -->
 
     <ImageView
         android:id="@+id/ivAvatar"
@@ -75,7 +72,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/ivAvatar" />
 
-    <!-- Карточка с деталями -->
     <TextView
         android:id="@+id/tvRole"
         android:layout_width="wrap_content"
@@ -103,8 +99,6 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Кнопка выхода -->
-    <!-- Заголовок "Мои биты" (виден только для продюсера) -->
     <Button
         android:id="@+id/btnLogout"
         android:layout_width="0dp"
@@ -151,7 +145,6 @@
         android:visibility="gone"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnTopUp" />
-    <!-- Кнопка "Загрузить бит" (видна только продюсеру) -->
     <Button
         android:id="@+id/btnUploadBeat"
         android:layout_width="0dp"
@@ -168,7 +161,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnLogout" />
-    <!-- Список битов продюсера -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewProducerBeats"
         android:layout_width="0dp"
@@ -181,7 +173,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvMyBeatsTitle" />
-    <!-- Нижний навбар -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bnb"
         android:layout_width="match_parent"
@@ -204,7 +195,6 @@
         app:layout_constraintTop_toBottomOf="@+id/view"
         app:layout_constraintVertical_bias="0.311">
 
-        <!-- Email -->
         <LinearLayout
             android:layout_width="250dp"
             android:layout_height="wrap_content"
@@ -229,7 +219,6 @@
         </LinearLayout>
 
 
-        <!-- Имя артиста (только для покупателя) -->
         <LinearLayout
             android:id="@+id/layoutArtistName"
             android:layout_width="match_parent"
@@ -262,7 +251,6 @@
             android:background="#EEEEEE"
             android:visibility="gone" />
 
-        <!-- Баланс -->
         <LinearLayout
             android:layout_width="250dp"
             android:layout_height="wrap_content"
@@ -287,7 +275,6 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Дата регистрации -->
         <LinearLayout
             android:layout_width="250dp"
             android:layout_height="wrap_content"

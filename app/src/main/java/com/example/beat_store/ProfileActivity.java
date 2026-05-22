@@ -48,9 +48,7 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
-
         AudioPlayer.getInstance().setCallback(this);
-
 
         currentUsername = getIntent().getStringExtra("username");
         currentRole = getIntent().getStringExtra("role");
@@ -60,6 +58,22 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         loadProfileData();
         loadBeats();
         setupBottomNavigation();
+        TextView tvMyBeatsTitle = findViewById(R.id.tvMyBeatsTitle);
+        Button btnUploadBeat = findViewById(R.id.btnUploadBeat);
+        RecyclerView recyclerViewProducerBeats = findViewById(R.id.recyclerViewProducerBeats);
+
+        if ("producer".equals(currentRole)) {
+            if (tvMyBeatsTitle != null) tvMyBeatsTitle.setVisibility(View.VISIBLE);
+            if (btnUploadBeat != null) btnUploadBeat.setVisibility(View.VISIBLE);
+            if (recyclerViewProducerBeats != null) recyclerViewProducerBeats.setVisibility(View.VISIBLE);
+        } else if ("customer".equals(currentRole)) {
+            if (tvMyBeatsTitle != null) {
+                tvMyBeatsTitle.setText("Купленные биты");
+                tvMyBeatsTitle.setVisibility(View.VISIBLE);
+            }
+            if (btnUploadBeat != null) btnUploadBeat.setVisibility(View.GONE);
+            if (recyclerViewProducerBeats != null) recyclerViewProducerBeats.setVisibility(View.VISIBLE);
+        }
     }
 
     private void initViews() {
@@ -73,6 +87,7 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         layoutArtistName = findViewById(R.id.layoutArtistName);
         dividerArtist = findViewById(R.id.dividerArtist);
         recyclerViewProducerBeats = findViewById(R.id.recyclerViewProducerBeats);
+        tvBeatsTitle = findViewById(R.id.tvMyBeatsTitle);
 
         ImageButton btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> finish());
@@ -240,7 +255,23 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
         BottomNavigationView bottomNavigationView = findViewById(R.id.bnb);
         bottomNavigationView.setSelectedItemId(R.id.nav_profile);
 
-        bottomNavigationView.getMenu().findItem(R.id.btnUploadBeat).setVisible("producer".equals(currentRole));
+        Button btnUploadBeat = findViewById(R.id.btnUploadBeat);
+
+        if (btnUploadBeat != null) {
+            if ("producer".equals(currentRole)) {
+                btnUploadBeat.setVisibility(View.VISIBLE);
+            } else {
+                btnUploadBeat.setVisibility(View.GONE);
+            }
+
+            btnUploadBeat.setOnClickListener(v -> {
+                Intent intent = new Intent(ProfileActivity.this, UploadBeatActivity.class);
+                intent.putExtra("username", currentUsername);
+                intent.putExtra("role", currentRole);
+                startActivity(intent);
+                finish();
+            });
+        }
 
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
@@ -251,14 +282,9 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                 startActivity(intent);
                 finish();
                 return true;
-            } else if (itemId == R.id.btnUploadBeat && "producer".equals(currentRole)) {
-                Intent intent = new Intent(ProfileActivity.this, UploadBeatActivity.class);
-                intent.putExtra("username", currentUsername);
-                intent.putExtra("role", currentRole);
-                startActivity(intent);
-                finish();
-                return true;
             }
+
+
             return itemId == R.id.nav_profile;
         });
     }
