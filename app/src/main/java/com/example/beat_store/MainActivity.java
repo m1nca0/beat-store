@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -32,7 +33,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
+import android.graphics.Color;
+import android.widget.ImageView;
 public class MainActivity extends AppCompatActivity implements AudioPlayer.PlayerCallback {
 
     private RecyclerView recyclerView;
@@ -155,8 +157,7 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
                     public void onBuyClick(Beat beat, int position) {
                         String username = getIntent().getStringExtra("username");
                         String role = getIntent().getStringExtra("role");
-                        if ("producer".equals(role) && username != null
-                                && username.equals(beat.getUsernameproducer())) {
+                        if ("producer".equals(role) && username != null && username.equals(beat.getUsernameproducer())) {
                             Intent intent = new Intent(MainActivity.this, UploadBeatActivity.class);
                             intent.putExtra("edit_mode", true);
                             intent.putExtra("beat_id", beat.getId());
@@ -169,15 +170,6 @@ public class MainActivity extends AppCompatActivity implements AudioPlayer.Playe
                             intent.putExtra("beat_audio", beat.getAudiofilepath());
                             intent.putExtra("username", username);
                             startActivity(intent);
-                            return;
-                        }
-                        if (username == null) {
-                            Toast.makeText(MainActivity.this, "Сначала войдите", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        if (!"customer".equals(role)) {
-                            Toast.makeText(MainActivity.this, "Только покупатели могут покупать биты", Toast.LENGTH_SHORT).show();
                             return;
                         }
 

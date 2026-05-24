@@ -43,7 +43,7 @@ public class beat_card_activity extends AppCompatActivity implements AudioPlayer
         String key = getIntent().getStringExtra("beat_key");
         double price = getIntent().getDoubleExtra("beat_price", 0.0);
         String license = getIntent().getStringExtra("beat_license");
-        audioFile = getIntent().getStringExtra("beat_audiofile");
+        audioFile = getIntent().getStringExtra("beat_audio");
 
 
         TextView tv_title = findViewById(R.id.tv_title);

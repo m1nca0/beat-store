@@ -33,10 +33,13 @@
         android:layout_width="325dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
+        android:background="@android:color/transparent"
+        app:queryHint="Поиск"
+        app:queryBackground="@android:color/transparent"
         app:layout_constraintBottom_toBottomOf="@+id/view"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.686" />
+        app:layout_constraintVertical_bias="0.49" />
 
     <Spinner
         android:id="@+id/spinnerFilter"

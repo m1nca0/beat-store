@@ -79,8 +79,7 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            String role = rgRoleLogin.getCheckedRadioButtonId() == R.id.rbCustomerLogin
-                    ? "customer" : "producer";
+            String role = rgRoleLogin.getCheckedRadioButtonId() == R.id.rbCustomerLogin ? "customer" : "producer";
 
             AuthRequest request = new AuthRequest(username, password, role);
             sendRequest(request, "login");

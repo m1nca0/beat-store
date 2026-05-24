@@ -127,7 +127,7 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                         intent.putExtra("beat_key", beat.getKey());
                         intent.putExtra("beat_license", beat.getLicensetype());
                         intent.putExtra("beat_price", beat.getPrice());
-                        intent.putExtra("beat_audiofile", beat.getAudiofilepath());
+                        intent.putExtra("beat_audio", beat.getAudiofilepath());
                         startActivity(intent);
                     } else {
                         Toast.makeText(this, "Вы уже купили этот бит", Toast.LENGTH_SHORT).show();
@@ -142,7 +142,7 @@ public class ProfileActivity extends AppCompatActivity implements AudioPlayer.Pl
                     intent.putExtra("beat_bpm", beat.getBpm());
                     intent.putExtra("beat_key", beat.getKey());
                     intent.putExtra("beat_price", beat.getPrice());
-                    intent.putExtra("beat_audiofile", beat.getAudiofilepath());
+                    intent.putExtra("beat_audio", beat.getAudiofilepath());
                     startActivity(intent);
                 },
 

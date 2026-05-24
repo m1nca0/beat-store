@@ -60,8 +60,9 @@ public interface ApiService {
             @Query("query") String query,
             @Query("field") String field
     );
+
     @Multipart
-    @PUT("beats/{id}")
+    @POST("beats/{id}/update")
     Call<Map<String, Object>> updateBeat(
             @Path("id") Long id,
             @Part MultipartBody.Part file,
@@ -72,6 +73,7 @@ public interface ApiService {
             @Part("licenseType") RequestBody licenseType,
             @Part("price") RequestBody price
     );
+
     @POST("profile/top-up")
     Call<Map<String, Object>> topUpBalance(@Body Map<String, Object> request);
 }
